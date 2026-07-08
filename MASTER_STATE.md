@@ -24,11 +24,11 @@ Date: 2026-07-08
 - PR #17: group identity work reached gate/review flow.
 - PR #19: Keyros Knowledge Base v1 produced and approved by Victor/ChatGPT for merge handling through normal gate flow.
 - EPIC 2 Platform Consolidation audit completed by Claude; safe docs corrections applied; backend/prod mutations remain gated findings.
-- Antenor completed multiple frontend consolidation loops; next frontend work should be selected from ROADMAP + MASTER_STATE, not from manual ad-hoc queues.
+- Antenor completed multiple frontend consolidation loops and Product PR #24 reached review/gate.
 
 ## Current operating model
 
-Keyros Orquestra now uses roadmap-driven autonomous mode.
+Keyros Orquestra now uses roadmap-driven autonomous mode with Hard Gates and Soft Continuation.
 
 Agents should no longer depend on Victor/ChatGPT manually writing every next task when the ROADMAP and MASTER_STATE are clear.
 
@@ -43,15 +43,18 @@ Default execution model:
 7. Select the next eligible EPIC inside the agent ownership boundary.
 8. Work on a new branch.
 9. Commit in small steps.
-10. Open a draft PR.
+10. Open or update a draft PR.
 11. Write an `agent-room/reports/` report.
-12. Stop at gate.
+12. Check Hard Gates.
+13. If no Hard Gate is crossed, continue automatically to the next eligible EPIC.
 
 `NEXT_ACTIONS.md` is now optional. It is only for temporary explicit overrides from Victor/ChatGPT.
 
 ## Current gate posture
 
 Agents are approved to START automatically using `ROADMAP.md` + `MASTER_STATE.md` + `GATES.md`.
+
+Agents must stop only for Hard Gates, uncertainty, ownership conflicts, blocked EPICs, or the continuous work limit.
 
 They are not approved to:
 
@@ -63,6 +66,26 @@ They are not approved to:
 - implement payment provider logic
 - cross ownership boundaries
 - skip roadmap order
+- start blocked EPICs
+
+They are approved to continue automatically across EPICs when:
+
+- work stays inside the same agent ownership boundary
+- work is isolated in branch + draft PR
+- report is written
+- no Hard Gate is crossed
+- no migration/deploy/production/auth/RLS/billing/destructive action is required
+
+## Continuous work limit
+
+Each agent may continue automatically until the first of these happens:
+
+- a Hard Gate is reached
+- 3 consecutive EPICs/major loops are completed without human review
+- 24 hours of continuous work has passed
+- the agent is uncertain whether the next step is safe
+
+After that, the agent must stop and report.
 
 ## Approved architecture
 
@@ -104,7 +127,7 @@ The registry is the source of truth for:
 
 ## Current known findings from Platform Consolidation
 
-The following findings should guide the next eligible backend/frontend work, while respecting gates:
+The following findings should guide the next eligible backend/frontend work, while respecting Hard Gates:
 
 1. Rate limit is absent in `whatsapp-send`, `automation-bulk-send`, and `automation-campaign-control` despite config existing. This is high priority before scale.
 2. Invitation create/revoke/resend flows need audit logging.
