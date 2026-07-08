@@ -5,9 +5,11 @@ Freshness rule: this file wins over older chat context when there is conflict.
 
 ## Global direction
 
-Current priority: finish identity stabilization, then build the Keyros Knowledge Base before expanding product modules.
+Current priority: move from Knowledge Base v1 into Phase 2 — Platform Consolidation.
 
-Do not start unrelated modules until the Knowledge Base EPIC is completed or explicitly approved by Victor/ChatGPT.
+The Knowledge Base v1 has been produced in Product PR #19 and is approved by Victor/ChatGPT for merge after normal repo gate handling.
+
+Next work must consolidate the platform before expanding new product modules.
 
 ## Current gates
 
@@ -23,124 +25,97 @@ Agents must stop before:
 - cross-agent conflict
 - major architecture decision
 
-## Active EPIC 0 — WhatsApp Identity Finalization
-
-### Claude tasks
-
-1. Review PR #17 backend changes.
-2. Confirm group identity uses `group.subject` only.
-3. Confirm group identity never depends on `sender_name`, `pushName`, participant `display_name` or the latest message participant.
-4. Confirm direct conversation identity still uses the corrected interlocutor logic from PR #16.
-5. Add or verify tests/fixtures for:
-   - direct incoming message
-   - direct `fromMe` message
-   - group message
-   - group `fromMe` message
-   - channel or unknown fallback
-6. Report:
-   - branch
-   - commit SHA
-   - PR
-   - tests run
-   - remaining blockers
-
-Claude must stop before merge or production deploy.
-
-### Antenor tasks
-
-1. Verify Messages UI after PR #17 from the frontend side.
-2. Confirm group names render from canonical conversation identity.
-3. Confirm participant names may appear inside messages but never replace the conversation title.
-4. Validate safe states for messages:
-   - loading
-   - empty
-   - error
-   - direct conversation
-   - group conversation
-5. Check mobile layout for conversation list and chat area.
-6. Fix safe frontend-only issues if found.
-7. Report:
-   - current loop area
-   - branch
-   - commit SHA
-   - PR if code changed
-   - report path
-   - blockers
-   - next loop area
-
-Antenor must not change backend identity logic.
-
-## Active EPIC 1 — Keyros Knowledge Base
+## Active EPIC 2 — Platform Consolidation
 
 ### Objective
 
-Create the official documentation brain inside the product repository first. Do not create a standalone repository yet.
+Make Keyros stable as a platform layer before adding new modules.
 
-Target path in product repo:
+Focus areas:
 
-```text
-docs/knowledge/
-```
+- Module Registry consistency
+- permissions and entitlements checks
+- frontend/backend vocabulary alignment
+- mock/fallback data visibility
+- tenant isolation boundaries
+- documentation status hygiene
 
-### Claude tasks — backend/architecture documentation
+This EPIC must not introduce Stripe provider code, destructive migrations, production deploys or auth boundary changes without gate approval.
 
-Maximum 15–20 tasks per loop.
+## Claude queue — backend/platform consolidation
 
-1. Create or update `docs/knowledge/00-introduction.md`.
-2. Create or update `docs/knowledge/02-system-architecture.md`.
-3. Create or update `docs/knowledge/09-whatsapp.md`.
-4. Create or update `docs/knowledge/12-billing.md`.
-5. Create or update `docs/knowledge/13-module-registry.md`.
-6. Create or update `docs/knowledge/16-security.md`.
-7. Create or update `docs/knowledge/17-database.md`.
-8. Create or update `docs/knowledge/19-edge-functions.md`.
-9. Create or update `docs/knowledge/20-testing.md`.
-10. Create or update `docs/knowledge/21-runbooks.md`.
-11. Document current confirmed behavior only.
-12. Mark planned behavior as `Planned`, not as implemented.
-13. Include AI interpretation rules in each backend-owned document.
-14. Add references to RLS, audit, rate limiter, module registry and identity protection where relevant.
-15. Report branch, commit SHA, PR and blockers.
+Maximum: 15–20 tasks per loop.
 
-Claude must stop before migrations, deploys, auth boundary changes or billing provider work.
+1. Read `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, `CLAUDE_ROLE.md`, and the merged/active `docs/knowledge/` docs before changing code.
+2. Audit current Module Registry definitions and confirm canonical module keys match approved bounded contexts:
+   - `dashboard`
+   - `crm`
+   - `calendar`
+   - `messages`
+   - `automations`
+   - `team`
+   - `billing`
+   - `finance`
+   - `reports`
+   - `settings`
+   - `agents`
+3. Search backend and shared code for legacy aliases that must normalize to approved domains:
+   - contacts/deals/pipeline -> `crm`
+   - payments/expenses -> `finance`
+   - ai/aiAgent -> `agents`
+4. Verify permission checks use Module Registry keys instead of screen-specific or hardcoded aliases where possible.
+5. Verify entitlement checks are centralized or clearly routed through the approved registry/billing boundary.
+6. Verify admin-only areas remain protected:
+   - team invitations
+   - billing
+   - module/permission management
+   - sensitive settings
+7. Review RLS-sensitive flows touched by permissions or entitlements.
+8. Confirm no frontend-only permission state can bypass backend/RLS protection.
+9. Review audit coverage for permission, invitation, billing/entitlement, and admin-sensitive actions.
+10. Review rate limit coverage for public or abuse-prone Edge Functions.
+11. Review idempotency/retry/circuit-breaker status for webhook and integration paths; document gaps as `Planned` if not implemented.
+12. Add or update tests where safe for registry normalization, permission guard behavior, and entitlement checks.
+13. Update Knowledge Base docs if implementation differs from documentation.
+14. Produce a report in `agent-room/reports/` with branch, commit SHA, PR, tests run, findings, blockers and next recommended EPIC.
+15. Open a draft PR if code or docs changed.
+16. Stop before merge, production deploy, production data change, migration apply, auth boundary change, or payment provider implementation.
 
-### Antenor tasks — frontend/product documentation
+## Antenor queue — frontend/platform consolidation
 
-Maximum 10 tasks per cycle. IMPLEMENTATION FIRST when safe frontend fixes are found.
+Maximum: 10 tasks per cycle.
+Implementation First: fix safe frontend-only issues found during the audit.
 
-1. Create or update `docs/knowledge/03-design-principles.md`.
-2. Create or update `docs/knowledge/04-crm-overview.md`.
-3. Create or update `docs/knowledge/05-dashboard.md`.
-4. Create or update `docs/knowledge/06-contacts.md`.
-5. Create or update `docs/knowledge/07-deals.md`.
-6. Create or update `docs/knowledge/08-messages.md`.
-7. Create or update `docs/knowledge/10-calendar.md`.
-8. Create or update `docs/knowledge/11-team.md`.
-9. Create or update `docs/knowledge/24-ux-rules.md`.
-10. Create or update `docs/knowledge/25-troubleshooting.md`.
+1. Read `ROADMAP.md`, `NEXT_ACTIONS.md`, `ANTENOR_ROLE.md`, and the active `docs/knowledge/` docs for UI-owned modules.
+2. Audit frontend module navigation and confirm visible modules match canonical keys from Module Registry.
+3. Identify UI places still using legacy labels as architecture keys instead of display labels:
+   - contacts/deals/pipeline
+   - payments/expenses
+   - ai/aiAgent
+4. Verify read-only, permission-denied and plan-locked states are clear and consistent across Team, Billing UI, Dashboard, CRM and Messages.
+5. Verify Settings and Team UI never imply the user can perform admin-only actions when permissions are missing.
+6. Check Dashboard for mock/fallback values and make them explicit if still present.
+7. Check CRM, Contacts and Deals UI for safe loading, empty and error states.
+8. Check Billing UI for placeholder/coming-soon states; do not implement Stripe or provider logic.
+9. Fix safe frontend-only issues discovered during the cycle.
+10. Produce a report with current loop area, branch, commit SHA, PR if code changed, report path, blockers and next loop area.
 
-Rules for Antenor:
-
-- Document what the UI currently does.
-- Identify mock/fallback data honestly.
-- Fix safe frontend-only issues discovered during documentation.
-- Do not change backend rules.
-- Do not invent business rules.
-- Stop at gates.
+Antenor must not change backend rules, database schema, RLS, billing provider logic or auth/access boundaries.
 
 ## ChatGPT responsibilities
 
-1. Review roadmap alignment.
-2. Review PR #17 before merge.
-3. Review Knowledge Base structure before merge.
-4. Approve or reject gates.
-5. Keep architecture consistent with `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, and role files.
+1. Review PR #19 final state and confirm Knowledge Base merge gate.
+2. Review Platform Consolidation PRs before merge.
+3. Approve or reject gates.
+4. Keep architecture consistent with `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, role files and Knowledge Base.
+5. Ensure Claude and Antenor remain separated by ownership boundaries.
 
 ## Success condition for this cycle
 
 This cycle is successful when:
 
-- PR #17 is reviewed and either approved or returned with changes.
-- `docs/knowledge/` exists in the product repo.
-- Claude and Antenor each have a scoped queue.
-- The system has a written direction after Knowledge Base completion.
+- Knowledge Base v1 is merged or explicitly queued for merge by Victor/ChatGPT.
+- Module Registry and permission boundaries are audited.
+- Legacy aliases are either normalized or documented as planned cleanup.
+- UI permission/plan states are clear and safe.
+- No production deploy, migration, auth boundary change or payment provider implementation happens without gate approval.
