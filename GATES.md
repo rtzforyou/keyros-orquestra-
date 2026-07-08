@@ -1,5 +1,12 @@
 # GATES
 
+Keyros Orquestra uses two kinds of gates:
+
+1. **Hard Gates** — agents must stop and wait for Victor/ChatGPT.
+2. **Soft Continuation** — agents must report, open/update draft PRs, then continue automatically to the next eligible EPIC if no Hard Gate is crossed.
+
+## Hard Gates
+
 Agents must stop and ask Victor or ChatGPT before:
 
 - merge to main
@@ -11,6 +18,47 @@ Agents must stop and ask Victor or ChatGPT before:
 - destructive operation
 - cross-agent conflict
 - major architecture decision
+- changing roadmap order
+- starting a blocked EPIC
+- crossing ownership boundaries
+
+## Soft Continuation
+
+Agents must **not** stop only because:
+
+- an EPIC loop finished
+- a report was created
+- a draft PR was opened
+- the next roadmap EPIC is available
+- the next work is inside the same agent ownership boundary
+- the next work does not require merge, deploy, migration, production mutation, auth/RLS/billing boundary change, destructive operation or major architecture decision
+
+In those cases, the agent must:
+
+```text
+finish loop
+  ↓
+commit small changes
+  ↓
+open or update draft PR
+  ↓
+write agent-room report
+  ↓
+select next eligible EPIC from ROADMAP + MASTER_STATE
+  ↓
+continue automatically
+```
+
+## Continuous Work Limit
+
+To avoid unbounded autonomous drift, each agent may continue automatically until the first of these happens:
+
+- a Hard Gate is reached
+- 3 consecutive EPICs/major loops are completed without human review
+- 24 hours of continuous work has passed
+- the agent is uncertain whether the next step is safe
+
+After that, the agent must stop and report.
 
 ## Permanent safety rules
 
@@ -40,7 +88,7 @@ draft PR
   ↓
 agent-room report
   ↓
-Gate review
+Hard Gate review only when required
 ```
 
 If a branch becomes unsafe or wrong, close the PR and discard the branch. `main` must remain recoverable and clean.
