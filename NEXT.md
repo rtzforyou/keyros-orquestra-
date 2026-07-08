@@ -8,53 +8,66 @@ Current state:
 - Team Real Model is complete for read-only production usage.
 - Next gates: approve Module Registry v2, approve plan values, authorize Team Permissions Editing branch.
 
-## Claude — 20 large tasks
+## Execution rule for both dev agents
 
-1. Finalize Canonical Module Registry v2 as source of truth.
-2. Normalize legacy module aliases in existing data and reports.
-3. Prepare Team Permissions Editing branch and PR draft.
-4. Design database changes for editable member permissions.
-5. Design safe admin update flow for team member permissions.
-6. Design plan keys, plan modules and team seat limits.
-7. Prepare database-side invite seat limit plan.
-8. Prepare Billing Entitlements architecture without Stripe implementation.
-9. Prepare Dashboard real-data backend plan for finance and CRM metrics.
-10. Prepare security review plan for Team, modules, plans and access checks.
-11. Define canonical plan tiers: Solo, Team, Business, Enterprise.
-12. Define default access behavior when organization plan is null.
-13. Design organization entitlement resolution function.
-14. Design member permission resolution function.
-15. Design audit event model for Team and plan changes.
-16. Prepare rollback plan for Team Permissions Editing.
-17. Prepare migration checklist for module registry tables or constants.
-18. Review current RLS policies affected by Team permissions.
-19. Prepare test matrix for admin, member and invited user scenarios.
-20. Produce short implementation roadmap for the next three backend slices.
+Default mode is IMPLEMENTATION FIRST.
 
-Claude must stop before migrations, production data changes, main merge, deploy, or Stripe implementation.
+A task is not complete if it only produced an audit, plan, spec, or report.
 
-## Antenor — 20 large tasks
+For each task, the agent must either:
 
-1. Audit production Team UI after PR 12 merge.
-2. Prepare editable Team Permissions UX based on Module Registry v2.
-3. Prepare admin-only Billing and plan UX screens.
-4. Expand frontend plan and seats UX states.
-5. Continue MockData cleanup with ownership map.
-6. Harden Settings UX across account, studio, team and plan sections.
-7. Harden CRM UX across contacts, deals, pipeline and drawers.
-8. Harden Dashboard UX for real-data loading, empty and error states.
-9. Clean reusable design system patterns: buttons, cards, tables, drawers, forms and alerts.
-10. Maintain QA, mobile and performance checklist across the main app.
-11. Prepare module locked-state UI for unavailable domains.
-12. Prepare permission checkbox UI for Team member editing.
-13. Prepare seat limit warning UI for invites.
-14. Prepare upgrade prompt UI without provider integration.
-15. Review navigation visibility rules for modules and roles.
-16. Review empty/loading/error states for Team, CRM, Dashboard and Settings.
-17. Review responsive behavior for main app pages.
-18. Review text clarity for plan, permission and seat language.
-19. Prepare frontend report of risky hardcoded values.
-20. Produce short implementation roadmap for the next three frontend slices.
+- change product code, create commit, update/open PR, run relevant checks, and report; or
+- clearly mark BLOCKED with the exact gate or missing approval.
+
+Audit and planning are allowed only as preparation for code changes, not as the final deliverable, unless a task explicitly says DESIGN ONLY.
+
+## Claude — 20 implementation tasks
+
+1. Implement Canonical Module Registry v2 as the backend source of truth in a branch/PR draft.
+2. Add stable domain ids: dashboard, crm, calendar, messages, automations, team, billing, finance, reports, settings, agents.
+3. Add legacy alias normalization for contacts/deals/pipeline -> crm, payments/expenses -> finance, ai/aiAgent -> agents.
+4. Implement or draft backend helper to resolve organization entitlements from plan data.
+5. Implement or draft backend helper to resolve member module access from role plus permissions.
+6. Implement Team Permissions Editing backend slice as a branch/PR draft.
+7. Add safe admin-only update flow for member permissions.
+8. Add validation so non-admin users cannot edit protected member access fields.
+9. Add audit events for member permission changes.
+10. Add test fixtures for admin, member, invited user and cross-organization scenarios.
+11. Implement plan tier constants or tables for Solo, Team, Business, Enterprise.
+12. Implement default behavior for organization plan null so current production access is not broken.
+13. Implement draft seat limit check for invitations without enabling paid provider integration.
+14. Add tests for seat limit allowed and blocked cases.
+15. Review and update affected RLS policies in a draft branch only.
+16. Add rollback notes for every migration or policy change.
+17. Implement backend report for current module permissions per organization.
+18. Prepare Dashboard real-data resolver draft for CRM and finance metrics.
+19. Remove or replace backend mock paths that block real dashboard data.
+20. Produce PR-ready backend slice list with code commits, not only documentation.
+
+Claude must stop before applying migrations, changing production data, merging main, deploying production, or implementing Stripe.
+
+## Antenor — 20 implementation tasks
+
+1. Fix production Team UI issues found after PR 12 merge and update/open a PR.
+2. Implement editable Team Permissions UI draft based on Module Registry v2.
+3. Implement permission checkbox/group components for member editing.
+4. Implement read-only vs editable permission states for admin and member views.
+5. Implement seat usage UI on Team invite flow.
+6. Implement invite blocked-by-seat-limit UI state without backend provider integration.
+7. Implement current plan card in Settings.
+8. Implement plan comparison UI draft for Solo, Team, Business, Enterprise.
+9. Implement module locked-state UI for unavailable domains.
+10. Implement upgrade CTA UI states without external provider integration.
+11. Replace remaining frontend MockData usages where real hooks already exist.
+12. Fix risky hardcoded module ids, plan names, permission labels and duplicated strings.
+13. Refactor reusable UI patterns for buttons, cards, badges, tables, drawers, forms and alerts where duplication exists.
+14. Improve Settings UX across account, studio, team and plan sections with real components.
+15. Improve CRM UX across contacts, deals, pipeline and drawers with code changes.
+16. Improve Dashboard UX loading, empty and error states for real-data readiness.
+17. Improve responsive layout for Team, Settings, CRM and Dashboard.
+18. Fix console errors, obvious warnings and blank-screen risks discovered during smoke checks.
+19. Add or update frontend smoke checklist file tied to the implemented changes.
+20. Produce PR-ready frontend slice list with code commits, not only documentation.
 
 Antenor must stop before main merge, deploy, backend ownership changes, or business-rule changes.
 
