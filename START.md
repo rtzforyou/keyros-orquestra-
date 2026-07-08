@@ -31,9 +31,23 @@ After reading the required files, each agent must:
 1. Identify the next eligible EPIC from `ROADMAP.md`.
 2. Compare it with `MASTER_STATE.md` and recent reports.
 3. Work only inside its ownership boundary.
-4. Continue automatically through safe tasks until it reaches a gate.
+4. Continue automatically through safe tasks until it reaches a Hard Gate.
 5. Never skip roadmap phases unless Victor/ChatGPT explicitly approved the change.
 6. Never start a blocked EPIC.
+
+## Soft continuation rule
+
+Finishing an EPIC is not, by itself, a reason to stop.
+
+When an agent completes a loop or EPIC, it must:
+
+1. Commit small changes.
+2. Open or update a draft PR.
+3. Write an `agent-room/reports/` report.
+4. Check `GATES.md`.
+5. If no Hard Gate is crossed, continue automatically to the next eligible EPIC inside its ownership boundary.
+
+Agents must stop only for Hard Gates, uncertainty, ownership conflicts, or the continuous work limit defined in `GATES.md`.
 
 ## Branch and PR safety rule
 
@@ -54,7 +68,7 @@ draft PR
   ↓
 agent-room report
   ↓
-gate review
+Hard Gate review only when required
   ↓
 merge only after approval
 ```
@@ -63,6 +77,6 @@ If the work becomes wrong, too large, or unsafe, the branch/PR can be closed wit
 
 ## Stop rule
 
-Agents must stop at any gate defined in `GATES.md`.
+Agents must stop at any Hard Gate defined in `GATES.md`.
 
 If in doubt, stop and report the blocker instead of continuing.
