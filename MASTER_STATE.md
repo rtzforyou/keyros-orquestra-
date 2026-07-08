@@ -14,8 +14,11 @@ Date: 2026-07-08
 - PR #9 merge commit: `541ea2c7f79da85e4c3d35f83f613c173bdeb569`
 - Team migration: applied in production.
 - Remote migration record reported by Claude: `20260708144838`
-- PR #12: reviewed by Claude and reported merge-safe.
-- Current gate: PR #12 merge decision.
+- PR #12: merged.
+- PR #12 merge commit reported by Claude: `f3cd200`
+- Cloudflare production deploy: success reported by Claude.
+- Team page in production: real read-only members.
+- Current gate: approve Module Registry v2 and authorize next implementation slices.
 
 ## Approved architecture
 
@@ -29,7 +32,7 @@ The registry is the source of truth for:
 - Feature flags
 - Future module access
 
-## Approved domain model
+## Approved domain model v2
 
 - `dashboard`
 - `crm`
@@ -51,3 +54,6 @@ The registry is the source of truth for:
 - Use `billing` for plans, seats, subscriptions, invoices and provider integration.
 - Use `agents` instead of generic `ai`.
 - Model Keyros by bounded contexts, not only by screens.
+- `billing` is core and admin-only.
+- `reports` is reserved until real reporting rules are defined.
+- Legacy aliases must be normalized: contacts/deals/pipeline -> crm, payments/expenses -> finance, ai/aiAgent -> agents.
