@@ -1,121 +1,125 @@
 # NEXT ACTIONS
 
-Date: 2026-07-08
+Date: 2026-07-09
 Freshness rule: this file wins over older chat context when there is conflict.
 
-## Global direction
+## Exceptional override — Claude Translation Architecture Audit
 
-Current priority: move from Knowledge Base v1 into Phase 2 — Platform Consolidation.
+This is an explicit Victor/ChatGPT override for the next Claude execution.
 
-The Knowledge Base v1 has been produced in Product PR #19 and is approved by Victor/ChatGPT for merge after normal repo gate handling.
+Reason:
 
-Next work must consolidate the platform before expanding new product modules.
+The dashboard currently shows mixed languages: sidebar translations follow the selected locale, while dashboard metric labels and some module texts remain hardcoded in Portuguese. This indicates an i18n architecture drift: some UI texts are using translation IDs, while others are embedded directly in React/components/hooks.
 
-## Current gates
+This task is exceptional because Claude is allowed to touch frontend/i18n files normally owned by Antenor. The exception is valid only for this execution and only for translation architecture cleanup.
 
-Agents must stop before:
+After this task, normal ownership returns:
 
-- merge to `main`
-- production deploy
+- Claude: backend/platform/architecture/security
+- Antenor: frontend/UX/components
+
+## Objective
+
+Create a safe, consistent translation architecture pass so Keyros UI text is driven by IDs/namespaces instead of hardcoded strings.
+
+The immediate visible bug to fix:
+
+- Dashboard sidebar is in French, but Dashboard cards remain in Portuguese.
+
+The architectural rule to enforce:
+
+- Business logic uses stable IDs/codes.
+- UI displays translated labels through translation files.
+- Components never hardcode user-facing text unless it is a temporary diagnostic string explicitly marked as such.
+
+## Claude allowed scope for this exceptional task
+
+Claude may edit:
+
+- translation/i18n files
+- Dashboard frontend files
+- shared UI label helpers
+- TypeScript types related to translation keys if needed
+- docs/knowledge files related to i18n, UX rules, dashboard, glossary or architecture
+- lint/test scripts for detecting hardcoded UI text if safe
+- agent-room report
+
+Claude must not edit:
+
+- Supabase migrations
+- production data
+- RLS
+- authentication
+- authorization boundaries
+- Billing Engine
+- Stripe/payment provider logic
+- unrelated backend features
+- unrelated UI redesigns
+
+## Required tasks
+
+1. Read `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, `CLAUDE_ROLE.md`, `docs/knowledge/`, and current translation/i18n implementation.
+2. Identify the active i18n system and where translations are stored.
+3. Audit Dashboard for hardcoded user-facing text.
+4. Replace dashboard metric/card labels with translation IDs.
+5. Add missing translations for at least the active supported locales already present in the repository.
+6. Use namespaced keys such as:
+   - `dashboard.metrics.openOpportunities`
+   - `dashboard.metrics.newLeads`
+   - `dashboard.metrics.grossRevenue`
+   - `dashboard.metrics.expenses`
+   - `dashboard.metrics.netProfit`
+   - `dashboard.metrics.wonDeals`
+   - `dashboard.metrics.conversionRate`
+   - `dashboard.metrics.averageTicket`
+   - `dashboard.pipelineFunnel.title`
+   - `dashboard.pipelineFunnel.subtitle`
+7. Audit visible Dashboard period filters and chart labels for hardcoded text.
+8. Ensure internal logic does not depend on translated labels.
+9. Ensure stage/status/category logic uses IDs/codes, not visible strings.
+10. Add or update a documentation file explaining Keyros Translation Architecture.
+11. Document the rule: UI text = translation ID; business logic = stable ID/code.
+12. Add a lightweight audit note or script if safe to help find remaining hardcoded UI strings later.
+13. Do not attempt a full-app translation refactor in one PR unless it is small and safe.
+14. Produce a report in `agent-room/reports/` with:
+    - files changed
+    - translation keys added
+    - hardcoded strings removed
+    - remaining i18n debt
+    - screenshots/manual test instructions
+    - blockers
+15. Open a draft PR.
+16. Stop before merge or production deploy.
+
+## Acceptance criteria
+
+The PR is acceptable when:
+
+- Dashboard labels follow the selected language consistently.
+- The sidebar and dashboard no longer mix French and Portuguese for core dashboard UI.
+- New keys are namespaced and reusable.
+- No business logic depends on translated text.
+- No backend/migration/auth/billing changes are introduced.
+- Documentation explains the translation architecture rule.
+
+## Hard stop conditions
+
+Stop immediately if the work requires:
+
+- migration
 - production data change
-- database migration apply
-- auth/access boundary change
-- payment provider implementation
-- destructive operation
-- cross-agent conflict
-- major architecture decision
+- auth/RLS change
+- billing provider implementation
+- backend behavior change unrelated to i18n
+- large cross-app refactor that cannot be reviewed safely
 
-## Active EPIC 2 — Platform Consolidation
+## Previous Platform Consolidation context
 
-### Objective
+The following findings still exist but are not the focus of this exceptional task:
 
-Make Keyros stable as a platform layer before adding new modules.
-
-Focus areas:
-
-- Module Registry consistency
-- permissions and entitlements checks
-- frontend/backend vocabulary alignment
-- mock/fallback data visibility
-- tenant isolation boundaries
-- documentation status hygiene
-
-This EPIC must not introduce Stripe provider code, destructive migrations, production deploys or auth boundary changes without gate approval.
-
-## Claude queue — backend/platform consolidation
-
-Maximum: 15–20 tasks per loop.
-
-1. Read `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, `CLAUDE_ROLE.md`, and the merged/active `docs/knowledge/` docs before changing code.
-2. Audit current Module Registry definitions and confirm canonical module keys match approved bounded contexts:
-   - `dashboard`
-   - `crm`
-   - `calendar`
-   - `messages`
-   - `automations`
-   - `team`
-   - `billing`
-   - `finance`
-   - `reports`
-   - `settings`
-   - `agents`
-3. Search backend and shared code for legacy aliases that must normalize to approved domains:
-   - contacts/deals/pipeline -> `crm`
-   - payments/expenses -> `finance`
-   - ai/aiAgent -> `agents`
-4. Verify permission checks use Module Registry keys instead of screen-specific or hardcoded aliases where possible.
-5. Verify entitlement checks are centralized or clearly routed through the approved registry/billing boundary.
-6. Verify admin-only areas remain protected:
-   - team invitations
-   - billing
-   - module/permission management
-   - sensitive settings
-7. Review RLS-sensitive flows touched by permissions or entitlements.
-8. Confirm no frontend-only permission state can bypass backend/RLS protection.
-9. Review audit coverage for permission, invitation, billing/entitlement, and admin-sensitive actions.
-10. Review rate limit coverage for public or abuse-prone Edge Functions.
-11. Review idempotency/retry/circuit-breaker status for webhook and integration paths; document gaps as `Planned` if not implemented.
-12. Add or update tests where safe for registry normalization, permission guard behavior, and entitlement checks.
-13. Update Knowledge Base docs if implementation differs from documentation.
-14. Produce a report in `agent-room/reports/` with branch, commit SHA, PR, tests run, findings, blockers and next recommended EPIC.
-15. Open a draft PR if code or docs changed.
-16. Stop before merge, production deploy, production data change, migration apply, auth boundary change, or payment provider implementation.
-
-## Antenor queue — frontend/platform consolidation
-
-Maximum: 10 tasks per cycle.
-Implementation First: fix safe frontend-only issues found during the audit.
-
-1. Read `ROADMAP.md`, `NEXT_ACTIONS.md`, `ANTENOR_ROLE.md`, and the active `docs/knowledge/` docs for UI-owned modules.
-2. Audit frontend module navigation and confirm visible modules match canonical keys from Module Registry.
-3. Identify UI places still using legacy labels as architecture keys instead of display labels:
-   - contacts/deals/pipeline
-   - payments/expenses
-   - ai/aiAgent
-4. Verify read-only, permission-denied and plan-locked states are clear and consistent across Team, Billing UI, Dashboard, CRM and Messages.
-5. Verify Settings and Team UI never imply the user can perform admin-only actions when permissions are missing.
-6. Check Dashboard for mock/fallback values and make them explicit if still present.
-7. Check CRM, Contacts and Deals UI for safe loading, empty and error states.
-8. Check Billing UI for placeholder/coming-soon states; do not implement Stripe or provider logic.
-9. Fix safe frontend-only issues discovered during the cycle.
-10. Produce a report with current loop area, branch, commit SHA, PR if code changed, report path, blockers and next loop area.
-
-Antenor must not change backend rules, database schema, RLS, billing provider logic or auth/access boundaries.
-
-## ChatGPT responsibilities
-
-1. Review PR #19 final state and confirm Knowledge Base merge gate.
-2. Review Platform Consolidation PRs before merge.
-3. Approve or reject gates.
-4. Keep architecture consistent with `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, role files and Knowledge Base.
-5. Ensure Claude and Antenor remain separated by ownership boundaries.
-
-## Success condition for this cycle
-
-This cycle is successful when:
-
-- Knowledge Base v1 is merged or explicitly queued for merge by Victor/ChatGPT.
-- Module Registry and permission boundaries are audited.
-- Legacy aliases are either normalized or documented as planned cleanup.
-- UI permission/plan states are clear and safe.
-- No production deploy, migration, auth boundary change or payment provider implementation happens without gate approval.
+1. Rate limit is absent in `whatsapp-send`, `automation-bulk-send`, and `automation-campaign-control` despite config existing.
+2. Invitation create/revoke/resend flows need audit logging.
+3. Circuit breaker is planned, not implemented.
+4. Frontend vocabulary drift exists in some areas and should align with Module Registry terminology.
+5. Entitlements exist as planned/incomplete wiring and belong to future Billing Engine work.
+6. Any migration already applied in production but missing from `main` must be reconciled through gate review.
