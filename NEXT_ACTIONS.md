@@ -36,9 +36,9 @@ Rules: frontend only; safe empty/loading/error/read-only/permission-denied/plan-
 
 ### Claude (backend / platform)
 **EPIC B — Backend Automation Shared-Layer Finalization + Security Close-out** (see ROADMAP → Active EPICs → EPIC B). Non-gated first; pile gated items in the gate queue:
-1. **NOW (non-gated):** Prepare `whatsappIdentity` adoption PRs — `whatsapp-send`, then `whatsapp-webhook` (remove inline `normalizeJid`/`getPhone`/`normalizePhone` → import from `_shared/whatsappIdentity.ts`; prove token-identical; `deno check` + `deno test`; open draft PR; STOP before deploy). One function per PR, deploy-coupled.
-2. **Architecture gate:** `automation-engine` legacy — write an ADR (stub vs keep) and stop for approval.
-3. **Queued after EPIC B:** issue **#38** (validate Finance/Dashboard real-data providers before agents), then **#40** (AI Foundation: Agent Registry / Tool Registry / Event Bus — DESIGN/spec, no implementation).
+1. **DONE (this session):** `automation-engine` legacy decision → **ADR-0004** (keyros-engine, PR #13) recommends **410 stub + delete** — it is a public, unauthenticated, `service_role` WhatsApp sender, with **no cron** (`cron.job` has only `automation-scheduler-every-minute`), only an orphan caller (`lead-intake`, being stubbed in PR #34), redundant with scheduler/execute, and no circuit breaker. Decision + deploy = **gate** → see queue below.
+2. **Optional / deprioritized (deploy-coupled):** `whatsappIdentity` adoption. Correction after inspection: only `whatsapp-webhook` inlines `normalizeJid`/`getPhone` (`whatsapp-send` and `automation-execute` do NOT use them). Value is small (2 tiny helpers) vs the deploy risk of the critical public webhook — prepare only when the webhook is being deployed for another reason (e.g. with PR #35 shared-secret).
+3. **NEXT non-gated (Claude):** issue **#38** (validate Finance/Dashboard real-data providers before agents) — backend/data audit, no deploy. Then **#40** (AI Foundation: Agent Registry / Tool Registry / Event Bus — DESIGN/spec only, no implementation).
 Rules: backend/platform/security/docs only; no frontend; no Stripe. Every deploy / key rotation / prod-data / migration / RLS = Hard Gate → stop.
 
 ## Gate posture in no-chat mode
@@ -56,7 +56,7 @@ While Victor is away, Hard-Gate items MUST NOT be executed. Instead:
 5. Merge product PR #33 (debug kill-stub source reconciliation; stubs already deployed).
 6. Triage product PRs #32 (docs), #30 (i18n — verify vs #31), #26 (stale — rebase or close).
 7. Each `whatsappIdentity` adoption PR: merge + deploy together (deploy-coupled).
-8. `automation-engine` stub/keep decision (architecture).
+8. `automation-engine` stub/keep decision (architecture) — **ADR-0004 recommends 410 stub + delete**; couple with `lead-intake` stub (PR #34). Confirm no unknown external caller via logs before delete.
 9. Follow-up: type-check fix in `automation-execute` (`result.error` vs `updateAutomationStatus`).
 
 ## Stop conditions (unchanged)
