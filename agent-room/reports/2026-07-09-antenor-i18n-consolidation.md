@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `c24c9c5e62bf04ea89254cc9ff4bf51a2ee0ee56`
+- **Commit SHA:** `65fb5dc7732a3922d515a4490f2b3810141f22bd`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -24,7 +24,7 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 5. **Billing plan configuration:** Added solo, basic, team, business, and enterprise descriptions, limits, pricing suffixes, and CTAs. Added current plan header, limit usage metrics, quota badges, team members labels, plan simulator header, and description tips.
 6. **Authentication Subtitles:** Added signup, reset, and password recovery subheadings.
 7. **Overlay dialog helpers:** Added confirm, delete, and welcoming overlay keys.
-8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels. Localized phone number input placeholder formats.
+8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels. Localized phone number input placeholder formats. Localized CSV export sheet columns and WhatsApp chat presence indicator hover tooltips.
 9. **Preferences Settings Feedback:** Added localized saved message notification string keys.
 10. **Payments & Billing Dialogs:** Added Stripe secure badge compliant footers and billing instructions translation keys.
 11. **Integrations & Reconnecting States:** Added Google Calendar sync selectors, sync mode directions, and Evolution API reconnecting state badge translation keys. Added general saved success indicator keys.
@@ -34,7 +34,7 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 
 ## 4. Build, Typecheck & Synchronization Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.11s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.12s)
 - **Repo Reconciliation:** Merged latest remote `main` branch cleanly into `antenor/frontend-i18n-consolidation` and successfully validated Vite build.
 
 ## 5. Remaining i18n Debt
