@@ -24,49 +24,87 @@ Agents must read files in this exact order:
 - `REPORT_FORMAT.md` defines how the agent reports.
 - `NEXT_ACTIONS.md` is optional and temporary. It must not be required for normal execution if the roadmap and master state are clear.
 
+## Autonomous work-queue model
+
+Agents must not treat a finished sprint, opened draft PR or report as a final stop.
+
+The operating model is a continuous work queue:
+
+```text
+select eligible work
+  ↓
+create/update branch
+  ↓
+implement a coherent safe batch
+  ↓
+small commits
+  ↓
+open/update draft PR
+  ↓
+write/update agent-room report
+  ↓
+check Hard Gates
+  ↓
+if no Hard Gate: continue to next eligible work
+```
+
+A draft PR is a checkpoint, not a stop condition.
+
+A report is a checkpoint, not a stop condition.
+
+A completed sprint is a checkpoint, not a stop condition.
+
 ## Autonomous EPIC selection
 
 After reading the required files, each agent must:
 
-1. Identify the next eligible EPIC from `ROADMAP.md`.
-2. Compare it with `MASTER_STATE.md` and recent reports.
+1. Identify the next eligible EPIC or work item from `ROADMAP.md`, `MASTER_STATE.md`, `NEXT_ACTIONS.md` and recent reports.
+2. Compare it with current repository state.
 3. Work only inside its ownership boundary.
-4. Continue automatically through safe tasks until it reaches a Hard Gate.
+4. Continue automatically through safe tasks until it reaches a Hard Gate or the continuous work limit.
 5. Never skip roadmap phases unless Victor/ChatGPT explicitly approved the change.
 6. Never start a blocked EPIC.
 
-## Soft continuation rule
+## Checkpoint rule
 
-Finishing an EPIC is not, by itself, a reason to stop.
+Agents must create checkpoints frequently to avoid hidden drift.
 
-When an agent completes a loop or EPIC, it must:
+A checkpoint means:
 
 1. Commit small changes.
 2. Open or update a draft PR.
-3. Write an `agent-room/reports/` report.
-4. Check `GATES.md`.
-5. If no Hard Gate is crossed, continue automatically to the next eligible EPIC inside its ownership boundary.
+3. Write or update an `agent-room/reports/` report.
+4. Continue automatically if no Hard Gate is crossed.
 
-Agents must stop only for Hard Gates, uncertainty, ownership conflicts, or the continuous work limit defined in `GATES.md`.
+Recommended checkpoint triggers:
 
-## Branch and PR safety rule
+- one coherent feature/refactor batch completed
+- more than 10 files changed
+- more than 5 commits accumulated
+- one module completed
+- one i18n/UX/backend area completed
+- before moving to a different domain or module
+
+Checkpoint does not require Victor/ChatGPT approval unless a Hard Gate is reached.
+
+## PR safety rule
 
 Agents must never work directly on `main`.
 
 Required execution flow:
 
 ```text
-ROADMAP
-  ↓
-MASTER_STATE
+ROADMAP / MASTER_STATE / NEXT_ACTIONS
   ↓
 new branch
   ↓
 small commits
   ↓
-draft PR
+draft PR checkpoint
   ↓
-agent-room report
+agent-room report checkpoint
+  ↓
+continue automatically when safe
   ↓
 Hard Gate review only when required
   ↓
@@ -77,6 +115,13 @@ If the work becomes wrong, too large, or unsafe, the branch/PR can be closed wit
 
 ## Stop rule
 
-Agents must stop at any Hard Gate defined in `GATES.md`.
+Agents must stop only when one of these happens:
 
-If in doubt, stop and report the blocker instead of continuing.
+- a Hard Gate in `GATES.md` is reached
+- the continuous work limit in `GATES.md` is reached
+- the next action would cross ownership boundaries
+- the next action is blocked by another agent or PR conflict
+- the agent is uncertain whether the next step is safe
+- there is no remaining eligible work inside its ownership boundary
+
+If in doubt, stop and report the blocker instead of guessing.
