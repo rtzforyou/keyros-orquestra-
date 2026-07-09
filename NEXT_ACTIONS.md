@@ -7,6 +7,26 @@ Victor approved continuing Keyros CRM from the roadmap point where we stopped: *
 
 Vector is now a separate experiment/repository. This file is only for Keyros CRM execution.
 
+---
+
+# Update — 2026-07-09 (late) · Two active EPICs approved by Victor (ChatGPT role temporarily held by Claude)
+
+Since the state below was written, the backend automation shared-layer work advanced and is now COMPLETE:
+
+- `automation-retry` → deployed v8; `automation-scheduler` → v24; `automation-execute` → v23. All import `_shared/templateEngine.ts` (ADR-0003 Option C). `main == prod`, no drift.
+- PRs #42, #43, #44, #45 merged. Rich `renderAutomationTemplate` + `RenderResult` live in `_shared`; `renderTemplate` is a compatible wrapper.
+
+Two EPICs are now active in parallel (details in ROADMAP.md → "Active EPICs — 2026-07-09"):
+
+- **EPIC A — Antenor (frontend):** EPIC 3 Loop 2 — CRM / Contacts / Deals UI Readiness.
+- **EPIC B — Claude (backend):** Backend Automation Shared-Layer Finalization + Security Remediation Close-out. Security-first: (1) classify/remediate remaining public Edge Functions + document risk; (2) `whatsappIdentity` adoption in `whatsapp-webhook`/`whatsapp-send` (additive→deploy-coupled); (3) `automation-engine` legacy decision (ADR). Every deploy / key rotation / prod-data cleanup is a Hard Gate — stop for Victor.
+
+Still pending security gates (unchanged, awaiting Victor approval): deploy PR #34 (`sync-whatsapp-history`/`lead-intake` stubs), deploy PR #35 (`whatsapp-webhook` secret), rotate `WHATSAPP_GLOBAL_API_KEY`, clean 2 `"Simulated Insert"` rows in `messages`.
+
+The detailed per-agent queues below remain valid as the working backlog.
+
+---
+
 Agents must run in continuous autonomous work-queue mode.
 
 A finished sprint, opened draft PR, or report is a checkpoint, not a stop condition.

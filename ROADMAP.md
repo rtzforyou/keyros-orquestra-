@@ -22,6 +22,7 @@ The Keyros system must remain understandable by humans and agents through offici
 - `automation-scheduler` shared template adoption: PR #43 merged and deployed as v24.
 - EPIC 3 — Frontend Consistency & Module Registry Alignment: PR #31 merged.
 - Shared rich template renderer, ADR-0003 Option C: PR #44 merged.
+- `automation-execute` shared template adoption, ADR-0003 Option C: PR #45 merged and deployed as v23. **Template-engine shared-layer adoption is now COMPLETE across `automation-retry` (v8), `automation-scheduler` (v24) and `automation-execute` (v23).** `main == prod`, no drift.
 
 ### Completed EPIC 3 details
 
@@ -66,11 +67,15 @@ Current Antenor next action:
 - `main == prod` must remain true for backend Edge Function work.
 - Any Edge Function adoption of `_shared` remains deploy-coupled.
 - `automation-execute` rich renderer architecture is resolved by ADR-0003 Option C and PR #44.
-- `automation-execute` adoption is now unlocked, but must be a separate deploy-coupled PR and must stop before deploy for Victor approval.
-- `landing-lead` is public and must remain the last adoption target.
+- `automation-execute` adoption is DONE (PR #45, deployed v23). Shared-template adoption complete.
+- `landing-lead` is a PUBLIC lead-capture endpoint. It does NOT use the template engine (no message templates), so there is no template adoption for it. Its public/high-risk status is handled by the SECURITY remediation (`sync-whatsapp-history` / `lead-intake` stubs, PR #34), not by template adoption.
 - Product Core frontend continues through Antenor issues #46–#52.
 
-### Next recommended EPIC
+### Active EPICs — 2026-07-09 (approved by Victor; ChatGPT role temporarily held by Claude)
+
+Two EPICs run in parallel, one per agent ownership, no cross-boundary work.
+
+#### EPIC A — Antenor (frontend)
 
 EPIC A1 — CRM / Contacts / Deals UI Readiness.
 
@@ -94,6 +99,32 @@ Exit criteria:
 - No mock-only UI behavior is presented as production behavior.
 - Module availability, labels, route guards and translations are aligned.
 - Antenor publishes a completion report with branch, commit, PR, tested flows and blockers.
+
+#### EPIC B — Claude (backend / platform)
+
+EPIC — Backend Automation Shared-Layer Finalization + Security Remediation Close-out.
+
+Goal: close the open backend security remediation and finish the shared-layer / legacy cleanup, without introducing repo↔prod drift. Security first.
+
+Scope (security-first ordering):
+
+1. Security close-out. Non-gated first: review/classify the remaining public "REVER" Edge Functions (`whatsapp-proxy`, `automation-scheduler/retry/bulk-send/campaign-control`, `setup-org-storage`, `automation-engine`, `lead-intake`) for own-auth; prepare any missing remediation PRs; document residual risk. Gated (stop for Victor): deploy PR #34 (`sync-whatsapp-history` / `lead-intake` 410 stubs), deploy PR #35 (`whatsapp-webhook` shared-secret), rotate `WHATSAPP_GLOBAL_API_KEY`, clean the 2 `"Simulated Insert"` rows in `messages`.
+2. Shared-layer cleanup (deploy-coupled): adopt `_shared/whatsappIdentity.ts` in `whatsapp-webhook` and `whatsapp-send` (`normalizeJid` / `getPhone` / `normalizePhone`), same additive→adopt flow as the template engine (additive PR merged first, then function-by-function deploy-coupled adoption).
+3. `automation-engine` legacy decision: stub vs keep (major architecture decision → ADR + gate).
+4. No new product model changes. No frontend. No AI agents. No Stripe.
+
+Gates (Hard, stop for Victor):
+
+- Any deploy, key rotation, or production-data cleanup.
+- `automation-engine` stub/keep is an architecture decision.
+- Every shared-layer adoption is deploy-coupled and stops before deploy.
+
+Exit criteria:
+
+- Debug/public-writer incident fully closed (stubs deployed, key rotated, junk cleaned) or explicitly deferred with documented residual risk.
+- `whatsappIdentity` duplication removed from active WhatsApp functions.
+- `automation-engine` fate decided and recorded (ADR).
+- Claude publishes a report per function with repo↔prod verified (`main == prod`).
 
 ## Phase 0 — Current gates and stabilization
 
@@ -240,16 +271,13 @@ Current automation infrastructure state:
 - `automation-scheduler` adopted `_shared/templateEngine.ts` and was deployed as v24.
 - `_shared/templateEngine.ts` now includes `RenderResult` and `renderAutomationTemplate` from ADR-0003 Option C.
 - `renderTemplate` remains a compatible string-returning wrapper.
-- `automation-execute` adoption is the next backend automation target and must be deploy-coupled.
-- `landing-lead` must remain last because it is public.
+- `automation-execute` adopted `_shared/templateEngine.ts` (rich `renderAutomationTemplate`) and was deployed as v23 (PR #45).
+- `landing-lead` does not use the template engine (no message templates); it is a public lead-capture endpoint handled by the security remediation, not by template adoption.
 
-Next automation step:
+Automation shared-layer status: COMPLETE.
 
-- Open a separate PR for `automation-execute` adoption.
-- Remove the inline rich renderer only after validating equivalence with `_shared/renderAutomationTemplate`.
-- Run `deno check` and `deno test`.
-- Validate against deployed version.
-- Stop before deploy for explicit Victor approval.
+- `automation-retry` (v8), `automation-scheduler` (v24) and `automation-execute` (v23) all import `_shared/templateEngine.ts`. Template-engine duplication is eliminated; `main == prod` for all three.
+- Remaining backend cleanup is tracked in **EPIC B** (whatsappIdentity adoption; `automation-engine` legacy decision) and the security close-out.
 
 Exit criteria:
 

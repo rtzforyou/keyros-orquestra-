@@ -8,6 +8,15 @@ Date: 2026-07-09
 - Engine: `rtzforyou/keyros-engine`
 - Orchestration: `rtzforyou/keyros-orquestra-`
 
+## Update — 2026-07-09 (late) · backend automation shared-layer COMPLETE + two active EPICs
+
+- Backend: PRs #36/#37/#42/#43/#44/**#45** merged. Automation shared-template adoption COMPLETE and deployed: `automation-retry` v8, `automation-scheduler` v24, `automation-execute` v23. All import `_shared/templateEngine.ts` (ADR-0003 Option C). `main == prod`, no drift on all three.
+- Security: debug trio (`debug-whatsapp`/`debug-api`/`diagnostic`) neutralized with 410 stubs in prod. Still pending (Hard Gates, awaiting Victor): deploy PR #34 (`sync-whatsapp-history`/`lead-intake` stubs), deploy PR #35 (`whatsapp-webhook` secret), rotate `WHATSAPP_GLOBAL_API_KEY`, clean 2 `"Simulated Insert"` rows.
+- Active EPICs (approved by Victor, ChatGPT role temporarily held by Claude): **A** — Antenor, EPIC 3 Loop 2 (CRM/Contacts/Deals UI Readiness); **B** — Claude, Backend Automation Shared-Layer Finalization + Security Close-out. See ROADMAP.md.
+- Follow-up chip open: pre-existing `deno check` type error in `automation-execute` (`result.error` vs `updateAutomationStatus`).
+
+The pre-existing product/production state below predates this update.
+
 ## Current product state
 
 - PR #9: merged.
