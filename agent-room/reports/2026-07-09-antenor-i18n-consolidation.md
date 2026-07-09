@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `65fb5dc7732a3922d515a4490f2b3810141f22bd`
+- **Commit SHA:** `1bc521af7a4df146d90d8108cdb65b630ffde959`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -22,19 +22,20 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 3. **Pipeline columns & settings:** Added stage organizing titles, columns constraints, and customization inputs.
 4. **Studio Artists & Team:** Added internal artist profile prompts, name placeholder fields, color configuration helpers, saved notifications, and empty listing states. Added invitation notifications, tabs headers, seat billing status panels, loading templates, and validation warning messages.
 5. **Billing plan configuration:** Added solo, basic, team, business, and enterprise descriptions, limits, pricing suffixes, and CTAs. Added current plan header, limit usage metrics, quota badges, team members labels, plan simulator header, and description tips.
-6. **Authentication Subtitles:** Added signup, reset, and password recovery subheadings.
+6. **Authentication Subtitles & Feedback:** Added signup, reset, password recovery notifications, password reset warnings, and access recovery subheadings.
 7. **Overlay dialog helpers:** Added confirm, delete, and welcoming overlay keys.
-8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels. Localized phone number input placeholder formats. Localized CSV export sheet columns and WhatsApp chat presence indicator hover tooltips.
+8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels. Localized phone number input placeholder formats. Localized CSV export sheet columns and WhatsApp chat presence indicator tooltips.
 9. **Preferences Settings Feedback:** Added localized saved message notification string keys.
 10. **Payments & Billing Dialogs:** Added Stripe secure badge compliant footers and billing instructions translation keys.
 11. **Integrations & Reconnecting States:** Added Google Calendar sync selectors, sync mode directions, and Evolution API reconnecting state badge translation keys. Added general saved success indicator keys.
+12. **Landing Integrations Settings & Profile:** Added avatar upload success/error notices and localized landing integrations dialog labels, headers, switcher variables, and placeholders.
 
 ### Layout & Responsiveness:
 - **Mobile Responsive Drawer Layout:** Implemented fixed responsive side drawer overlays with close buttons and mobile hamburger menu headers in `App.tsx` and `Sidebar.tsx`.
 
 ## 4. Build, Typecheck & Synchronization Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.12s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.15s)
 - **Repo Reconciliation:** Merged latest remote `main` branch cleanly into `antenor/frontend-i18n-consolidation` and successfully validated Vite build.
 
 ## 5. Remaining i18n Debt
