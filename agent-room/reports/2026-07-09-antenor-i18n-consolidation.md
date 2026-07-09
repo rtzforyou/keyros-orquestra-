@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `f5ef1bdce9c7501a3556c5478479ec5087fdbcc0`
+- **Commit SHA:** `e6ec13837f401ea692e850b556b613769c8901eb`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -21,14 +21,14 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 2. **WhatsApp Connection Flow:** Added connection states, loading checks, QR code renewals, and success notifications.
 3. **Pipeline columns & settings:** Added stage organizing titles, columns constraints, and customization inputs.
 4. **Studio Artists & Team:** Added internal artist profile prompts, name placeholder fields, color configuration helpers, and empty listing states.
-5. **Billing plan configuration:** Added solo, basic, team, business, and enterprise descriptions, limits, pricing suffixes, and CTAs.
+5. **Billing plan configuration:** Added solo, basic, team, business, and enterprise descriptions, limits, pricing suffixes, and CTAs. Added current plan header, limit usage metrics, quota badges, team members labels, plan simulator header, and description tips.
 6. **Authentication Subtitles:** Added signup, reset, and password recovery subheadings.
 7. **Overlay dialog helpers:** Added confirm, delete, and welcoming overlay keys.
 8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels.
 
 ## 4. Build & Typecheck Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.23s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.43s)
 
 ## 5. Remaining i18n Debt
 - Developer guidelines and code payload configurations inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they represent copy/paste snippets for developers.
