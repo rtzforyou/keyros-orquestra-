@@ -3,14 +3,7 @@
 Date: 2026-07-09
 Freshness rule: this file wins over older chat context when there is conflict.
 
-## Current direction
-
-Current parallel tracks:
-
-- **Claude:** Repo ↔ Production Reconciliation before any future Edge Function/webhook/send deploy.
-- **Antenor:** Frontend Quality & Internationalization, without entering Product Core yet.
-
-Do not start Phase 3 Product Core until the repository/production drift is reconciled and frontend quality debt is reduced.
+Victor is offline / away. Agents must use autonomous work-queue mode and checkpoint frequently.
 
 A finished sprint, opened draft PR or report is not a stop condition. It is a checkpoint.
 
@@ -40,125 +33,344 @@ Draft PRs and reports must be created early to prevent large hidden branches, bu
 
 ---
 
-# Claude Work Queue — Repo ↔ Production Reconciliation
+# CURRENT STATE SNAPSHOT
 
-## Objective
+## Completed / merged
 
-Align the repository with what is already live in production before any future deploy of webhook/send/resilience-related code.
+- PR #29 has been merged. Backend resilience repo↔production reconciliation is complete for webhook/send/resilience path.
+- `main` was reported healthy after #29: `npx tsc --noEmit` clean and production build successful.
+- Critical debug endpoints `debug-whatsapp`, `debug-api`, and `diagnostic` were neutralized in production with 410 Gone kill-stubs.
 
-## Current known state
+## Active / open
 
-Claude produced Product PR #29 for backend resilience repo↔production reconciliation.
+- PR #31: Antenor clean frontend i18n consolidation. Draft, frontend-only expected, needs review/continuation.
+- PR #32: Claude docs/platform inventory. Draft/open docs PR.
+- PR #33: security remediation kill-stubs. Draft/open code source for already deployed stubs; must be reviewed/merged/reconciled through normal gate.
+- Engine reports/PRs exist for security and platform docs.
 
-PR #29 should be reviewed through the normal gate flow. Claude must not merge it himself.
+## Blocked / not approved
 
-## Queue
-
-1. Keep PR #29 updated if review reveals safe fixes.
-2. Verify recovered backend resilience artifacts remain aligned with deployed production source.
-3. Verify `whatsapp-send`, `automation-bulk-send`, `automation-campaign-control`, `_shared/circuitBreaker.ts`, `_shared/rateLimiter.ts` and related migration files are in repo state.
-4. Verify no frontend-only WIP was accidentally included.
-5. Update docs/knowledge only if implementation differs.
-6. Produce/update engine report with exact drift map.
-7. After PR #29 is merged by Victor/ChatGPT, select the next backend/platform eligible work from `ROADMAP.md` and `MASTER_STATE.md`.
-
-## Hard rules
-
-Claude must stop before merge, production deploy, production data mutation, migration apply, auth/RLS change, Billing Engine or Stripe work, destructive operation, or crossing ownership boundaries.
+- PR #30 is not approved. It is stale/dirty and must not be merged. Recover useful frontend work only through clean PRs.
 
 ---
 
-# Antenor Work Queue — Frontend Quality & Internationalization
+# Claude Native Command — Security and Platform Sequence
 
-## Objective
+## START command
 
-Prepare the frontend for Phase 3 by reducing UI/i18n/design-system debt without depending on backend changes.
+```text
+START
 
-Antenor must not start Product Core features yet. This track is platform-quality work only.
+Run in continuous autonomous work-queue mode.
 
-## Ownership
+Read in order:
 
-Antenor owns React UI, UX consistency, frontend components, responsive behavior, frontend i18n cleanup, accessibility, frontend performance and frontend documentation.
+1. ROADMAP.md
+2. MASTER_STATE.md
+3. CLAUDE_ROLE.md
+4. GATES.md
+5. REPORT_FORMAT.md
+6. NEXT_ACTIONS.md
+7. Relevant docs/knowledge/
 
-Antenor must not touch Supabase migrations, Edge Functions, backend logic, RLS, auth boundaries, Billing Engine, Stripe/payment logic, production data, circuit breaker backend/shared implementation or `CLAUDE.md`.
+Draft PRs and reports are checkpoints, not stopping conditions.
 
-## Required read order
+Continue automatically through eligible backend/platform/security work inside Claude ownership.
 
-1. `ROADMAP.md`
-2. `MASTER_STATE.md`
-3. `ANTENOR_ROLE.md`
-4. `GATES.md`
-5. `REPORT_FORMAT.md`
-6. `docs/knowledge/29-translation-architecture.md`
-7. Relevant frontend/module Knowledge Base docs
+Stop only for Hard Gates, ownership conflict, blocked work, uncertainty, no remaining eligible backend work, or continuous work limit.
+```
 
-## Autonomous queue rule
+## Claude sequence
 
-Antenor must keep moving through the queue until a Hard Gate or continuous work limit is reached.
+### 1. Security remediation source reconciliation
 
-Antenor must checkpoint frequently:
-
-1. create or reuse a clean frontend-only branch
-2. commit small changes
-3. open or update a draft PR
-4. create or update an `agent-room/reports/` report
-5. continue to the next frontend-only eligible item if no Hard Gate is reached
-
-## Queue Area 1 — i18n audit
-
-1. Run or inspect the i18n audit script if available.
-2. Identify visible hardcoded UI strings outside Dashboard.
-3. Prioritize modules with visible user impact: Messages, CRM, Contacts, Deals/Pipeline, Calendar, Team, Settings, Billing UI.
-4. Replace safe hardcoded strings with translation IDs.
-5. Add missing keys in all supported locales already present in the repo.
-6. Do not change business logic.
-7. Do not translate internal IDs, enum values, stage IDs, module keys or route keys.
-8. Checkpoint with draft PR/report, then continue.
-
-## Queue Area 2 — Dashboard subcomponents
-
-Audit and i18n-clean WhatsAppAutomationStats, LeadSourceChart, RevenueExpenseChart, ExpensesChart, UpcomingAppointments, RecentActivity and PipelineChart.
-
-Rules: chart labels, tooltips, empty/loading/error text must come from translation IDs; business calculations must continue using stable IDs/codes; checkpoint with draft PR/report, then continue.
-
-## Queue Area 3 — CRM/Contacts/Deals UI readiness
-
-Audit and fix safe frontend-only state quality: loading, empty, error, permission denied, plan locked, read-only, mobile layout, drawer/modal labels and buttons/actions.
-
-Do not implement new Product Core data sync.
+1. Verify PR #33 contains only the 410 Gone kill-stubs for:
+   - `debug-whatsapp`
+   - `debug-api`
+   - `diagnostic`
+2. Verify those production functions are still neutralized.
+3. Ensure PR #33 contains no unrelated changes.
+4. Update the security report if needed.
+5. Do not deploy again unless a security gate explicitly requires it.
+6. Do not delete the function slugs yet.
+7. Do not rotate keys yet.
+8. Do not clean production data yet.
 
 Checkpoint with draft PR/report, then continue.
 
-## Queue Area 4 — Component consistency
+### 2. sync-whatsapp-history remediation preparation
 
-Audit and consolidate safe component reuse for Buttons, Cards, Inputs, Tables, Dialogs, Drawers, Badges, Chips, Empty States, Skeletons and Toasts/feedback labels.
+Prepare the smallest safe remediation for `sync-whatsapp-history` because it is public and can create production deals/contacts.
 
-Avoid broad rewrites. Prefer small, reviewable component reuse.
+Allowed:
+
+- create a 410 Gone kill-stub PR for `sync-whatsapp-history`
+- document why it is legacy/high-risk
+- prepare verification steps
+- prepare rollback plan
+
+Not allowed without explicit gate:
+
+- deploy
+- delete function
+- mutate production
+- clean data
+- rotate keys
+
+Checkpoint with draft PR/report, then stop if deploy is required.
+
+### 3. Public Edge Function auth inventory
+
+Audit every deployed Edge Function with `verify_jwt=false` and classify it:
+
+- required with valid custom auth
+- webhook requiring external signature/secret
+- legacy but harmless
+- legacy risky
+- debug/diagnostic
+- unknown
+
+For each function, report:
+
+- whether it uses `service_role`
+- whether it reads tenant data
+- whether it writes production data
+- whether it has custom auth
+- recommended action
+
+Do not call dangerous endpoints. Prefer source review and metadata inspection.
 
 Checkpoint with draft PR/report, then continue.
 
-## Queue Area 5 — Accessibility and responsive pass
+### 4. Webhook spoofing review
 
-Audit and fix safe issues for keyboard focus, aria-labels, contrast, mobile overflow, tablet layout, desktop consistency and drawer/modal navigation.
+Review `whatsapp-webhook` security posture.
+
+Goal:
+
+- confirm whether Evolution API requests are authenticated with a shared secret or equivalent
+- if missing, prepare a minimal design/PR for webhook signature or token validation
+
+Hard stop before:
+
+- auth/access boundary change
+- deploy
+- secret rotation
+- production mutation
+
+Checkpoint with draft PR/report, then continue if still safe.
+
+### 5. Legacy Edge / Migration Cleanup proposal
+
+Continue documenting the legacy drift discovered:
+
+- deployed-only functions
+- repo-only functions
+- migration ledger drift
+
+Do not delete or rewrite history automatically.
+
+Prepare a decision document with options:
+
+- keep as legacy with stubs
+- delete slugs
+- reconcile source files
+- rename/deprecate
+- ignore if harmless
 
 Checkpoint with draft PR/report, then continue.
 
-## Queue Area 6 — Frontend documentation
+## Claude hard boundaries
 
-Update relevant docs only when behavior changes: `docs/knowledge/03-design-principles.md`, `docs/knowledge/05-dashboard.md`, `docs/knowledge/24-ux-rules.md`, `docs/knowledge/29-translation-architecture.md`.
+Claude must stop before:
 
-Checkpoint with draft PR/report, then continue to the next eligible frontend platform-quality item.
+- merge to main
+- production deploy
+- database migration apply
+- production data mutation or cleanup
+- key/secret rotation
+- auth/RLS/access boundary change
+- Billing Engine / Stripe work
+- destructive operation
+- crossing Antenor ownership
 
-## PR review criteria
+---
 
-Antenor's PR is acceptable when it is frontend-only, no backend/migration/auth/RLS/billing files are touched, no user-facing text is newly hardcoded, all new visible UI strings use translation IDs, internal logic uses stable IDs/codes, build/typecheck status is reported, and remaining frontend/i18n debt is listed.
+# Antenor Native Command — Frontend Sequence
 
-These criteria are for review. They are not a reason for Antenor to stop early if more safe frontend work remains.
+## START command
 
-## Hard stop conditions
+```text
+START
 
-Stop immediately if the next action requires backend changes, Supabase changes, migration, production deploy, auth/RLS/permission boundary change, Billing Engine or Stripe logic, destructive operation, cross-agent conflict or unclear ownership.
+Run in continuous autonomous work-queue mode.
 
-## Report format addition
+Read in order:
 
-Antenor reports must include modules audited, translation keys added, hardcoded strings removed, files changed, build/typecheck result, remaining i18n debt, remaining UX debt, blockers and next safe frontend work item.
+1. ROADMAP.md
+2. MASTER_STATE.md
+3. ANTENOR_ROLE.md
+4. GATES.md
+5. REPORT_FORMAT.md
+6. NEXT_ACTIONS.md
+7. docs/knowledge/29-translation-architecture.md
+8. Relevant frontend/module docs/knowledge/
+
+Synchronize with latest main before continuing.
+
+Draft PRs and reports are checkpoints, not stopping conditions.
+
+Continue automatically through eligible frontend/i18n/UX work inside Antenor ownership.
+
+Stop only for Hard Gates, ownership conflict, blocked work, uncertainty, no remaining eligible frontend work, or continuous work limit.
+```
+
+## Antenor sequence
+
+### 1. PR #31 continuation and verification
+
+1. Sync PR #31 with latest `main`.
+2. Verify PR #31 is frontend-only.
+3. Ensure PR #31 does not include:
+   - Supabase migrations
+   - Edge Functions
+   - backend logic
+   - RLS/auth changes
+   - Billing Engine / Stripe logic
+   - production data changes
+   - `.claude` files
+4. Run typecheck/build.
+5. Update the frontend report.
+6. Continue automatically if no Hard Gate is reached.
+
+### 2. Continue remaining frontend i18n debt
+
+Continue replacing visible hardcoded strings with translation IDs in:
+
+- Messages
+- CRM
+- Contacts
+- Deals/Pipeline
+- Calendar
+- Team
+- Settings
+- Billing UI
+- Support dialog
+- Integrations panels
+- Dashboard subcomponents
+
+Rules:
+
+- visible UI text must use translation IDs
+- business logic must use stable IDs/codes
+- do not translate enums, stage IDs, module keys, route keys or database values
+- add keys for all supported locales already present in repo
+
+Checkpoint with draft PR/report, then continue.
+
+### 3. UI status feedback cleanup
+
+Replace remaining browser-native UI patterns with inline Keyros UI:
+
+- `alert()`
+- `confirm()`
+- raw browser prompts
+- unstyled success/failure messages
+
+Use:
+
+- inline status banners
+- modal success states
+- toast/status components if already available
+- accessible error states
+
+Do not introduce broad design rewrites.
+
+Checkpoint with draft PR/report, then continue.
+
+### 4. CRM / Contacts / Deals UI readiness
+
+Audit and improve frontend-only states:
+
+- loading
+- empty
+- error
+- permission denied
+- plan locked
+- read-only
+- mobile layout
+- drawer/modal labels
+- action buttons
+
+Do not implement new backend data sync or Product Core behavior yet unless explicitly unlocked.
+
+Checkpoint with draft PR/report, then continue.
+
+### 5. Dashboard polish and consistency
+
+Audit and improve frontend-only dashboard UI:
+
+- chart labels
+- tooltips
+- empty states
+- loading states
+- error states
+- responsive layout
+- card spacing
+- metric naming consistency
+
+Do not change calculations or backend queries.
+
+Checkpoint with draft PR/report, then continue.
+
+### 6. Accessibility and responsive pass
+
+Audit and fix safe issues:
+
+- aria-labels
+- keyboard focus
+- contrast
+- mobile overflow
+- tablet layout
+- desktop consistency
+- drawer/modal navigation
+
+Checkpoint with draft PR/report, then continue.
+
+### 7. Frontend documentation
+
+Update docs only where behavior/rules changed:
+
+- `docs/knowledge/03-design-principles.md`
+- `docs/knowledge/05-dashboard.md`
+- `docs/knowledge/24-ux-rules.md`
+- `docs/knowledge/29-translation-architecture.md`
+
+Checkpoint with draft PR/report, then continue.
+
+## Antenor hard boundaries
+
+Antenor must stop before:
+
+- backend work
+- Supabase changes
+- Edge Functions
+- migrations
+- production deploy
+- production data mutation
+- auth/RLS/permission boundary change
+- Billing Engine / Stripe logic
+- destructive operation
+- crossing Claude ownership
+
+---
+
+# Review rule for Victor/ChatGPT when back online
+
+Review priority:
+
+1. Security PRs first: PR #33 and any `sync-whatsapp-history` remediation PR.
+2. Then PR #31 frontend i18n/UX.
+3. Then PR #32 docs/platform inventory.
+4. Then decide Legacy Edge/Migration Cleanup.
+5. Only after security + frontend debt are under control, unlock Phase 3 Product Core.
