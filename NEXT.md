@@ -6,6 +6,16 @@ Mission: **Finish line — comercialização.** Levar o produto a estado vendáv
 WhatsApp Cloud API (oficial) ponta-a-ponta + billing Stripe. Victor investiu 1 ano;
 foco em terminar, sem baixar a fasquia de segurança (é AGORA que ela mais importa).
 
+**Modo operacional (decidido por Victor 2026-07-09):** (1) BATCH APPROVALS — o auto-mode
+do Claude Code gateia CADA mudança de prod (migração/deploy/dados); Claude agrupa e Victor
+dá poucos "aprovado". Não é alterável na orquestra (é permissão do Claude Code). (2) CLAUDE
+assume TAMBÉM o frontend (React) desta fase — onboarding do canal WhatsApp, gestão de
+templates, UI de billing. Antenor liberto para outras frentes.
+
+**Estado sequência (2026-07-09):** C1 ✅ C2 ✅ C3 ✅ (deployed+validado) · C4 em curso · C5 · EPIC D (design).
+Bloqueios de input de Victor: App Secret Meta (+subscrever `messages`); decisões+chaves Stripe.
+Bloqueio externo: token produção Meta (bug FB SMS).
+
 ## Estado atual (factos)
 - EPIC C (WhatsApp Cloud) — **C1/C2/C3a DONE + DEPLOYED + VALIDADO** (branch `claude/whatsapp-cloud-api-c1`, PR #54):
   - `whatsapp_channels` + `whatsapp_templates` (RLS por org), token no Vault.
