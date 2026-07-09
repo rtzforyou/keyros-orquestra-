@@ -1,84 +1,57 @@
 # NEXT
 
 Status: ACTIVE
-Date: 2026-07-08
+Date: 2026-07-09
+Mission: **Finish line — comercialização.** Levar o produto a estado vendável:
+WhatsApp Cloud API (oficial) ponta-a-ponta + billing Stripe. Victor investiu 1 ano;
+foco em terminar, sem baixar a fasquia de segurança (é AGORA que ela mais importa).
 
-Current state:
-- PR 12 is merged.
-- Team Real Model read-only is live in production.
-- Module Registry v2 is approved as architecture.
-- PR 13 exists as draft for Team Permissions Editing.
-- Critical finding: invitations policy allows indirect privilege escalation. This must be fixed before Team Editing goes live.
+## Estado atual (factos)
+- EPIC C (WhatsApp Cloud) — **C1/C2/C3a DONE + DEPLOYED + VALIDADO** (branch `claude/whatsapp-cloud-api-c1`, PR #54):
+  - `whatsapp_channels` + `whatsapp_templates` (RLS por org), token no Vault.
+  - `whatsapp-connect-channel` (BYON manual, verify na Graph, token no Vault). deployed.
+  - `whatsapp-cloud-webhook` (handshake + X-Hub-Signature-256 + logging). deployed, **verificado na Meta (✓ verde)**.
+  - Envio validado com número de teste (`hello_world` entregue). Vault round-trip provado.
+- **Bloqueio externo:** Facebook não envia SMS p/ gerar o **token permanente de produção**
+  → número real não liga já. NÃO bloqueia o backend: tudo se valida com o número de teste;
+  o número real liga depois pela função já pronta. App ainda **Unpublished** (só test webhooks).
 
-## Execution rule for both dev agents
+## Regra de execução (ambos os agentes)
+IMPLEMENTATION FIRST. Uma tarefa não está completa se só produziu auditoria/plano.
+Ou muda código + commit + PR + checks + report, ou marca BLOCKED com o gate exato.
+Uma mudança de cada vez (protocolo de mudanças isoladas). deno check / build antes de report.
 
-Default mode is IMPLEMENTATION FIRST.
+## Gates (só Victor)
+- Merge, deploy de edge function, apply de migração, mutação de dados de produção.
+- **Stripe / billing / chaves** — gate reforçado (decisões de pricing + chaves).
+- Publicar a app Meta / App Review.
 
-A task is not complete if it only produced an audit, plan, spec, or report.
+## Claude (backend/plataforma/segurança) — sequência até à linha de chegada
+1. **C3b — persistência inbound:** o `whatsapp-cloud-webhook` passa a criar/atualizar
+   contacto + `whatsapp_chats` + `whatsapp_messages` (dedup por telefone/wa_id) e a
+   disparar automação `whatsapp_message_received`. Provider = 'cloud_api'. Nunca cria deal.
+2. **C4 — outbound Cloud + janela 24h:** rotear o envio pelo provider layer. Se a org tem
+   canal Cloud ativo → `cloudApiProvider` (texto dentro de 24h; fora → template). Evolution
+   permanece fallback. Não partir o caminho Evolution existente. Gate de deploy.
+3. **C5 — registry de templates:** sync dos templates aprovados (Graph) para
+   `whatsapp_templates`; automações fora da janela usam template + mapeamento de variáveis.
+4. **BILLING backend (novo EPIC D) — DESIGN primeiro (ADR-0006):** modelo de planos/
+   entitlements + `stripe-webhook` (assinado) + checkout/session edge functions. NADA
+   implementado sem decisões de Victor (planos, preços, chaves de teste). Gate reforçado.
+5. Unificar `whatsapp-send` sob o provider (descontinuar caminho hardcoded Evolution).
 
-For each task, the agent must either:
-- change product code, create commit, update/open PR, run relevant checks, and report; or
-- clearly mark BLOCKED with the exact gate or missing approval.
+## Antenor (frontend/produto) — em paralelo
+1. **C6 — Onboarding de canal WhatsApp:** UI em Settings para ligar número Cloud (colar
+   phone_number_id/waba_id/token → chama `whatsapp-connect-channel`), estado do canal,
+   nunca mostrar/guardar token no cliente.
+2. Conversas/Mensagens: garantir que a UI de chat funciona com mensagens `provider='cloud_api'`.
+3. Gestão de templates (lista + estado aprovado/pendente) sobre `whatsapp_templates`.
+4. **Billing UI (EPIC D):** planos, seats, estado de subscrição, checkout — UI-only até o
+   backend Stripe existir; sem chaves no frontend.
 
-Audit and planning are preparation for code changes, not final deliverables, unless a task explicitly says DESIGN ONLY.
+## Bloqueios/decisões pendentes de Victor
+- Token de produção Meta (bug FB SMS) — externo; retomar quando destravar.
+- Decisões Stripe (ADR-0006): tabela de planos + preços, modo (test/prod), chaves.
+- App Review Meta: só permissões `whatsapp_business_*` (as 10 de Facebook Login foram engano).
 
-## Gate decision
-
-Approved:
-- Module Registry v2 architecture.
-- Start Slice 1 as PR draft work.
-- Include invitations security fix in Slice 1.
-
-Not approved yet:
-- Merge PR 13.
-- Apply migrations.
-- Production data changes.
-- Stripe implementation.
-
-## Claude — next 20 implementation tasks
-
-1. Update PR 13 or create a follow-up PR to include the invitations security fix.
-2. Make invitation INSERT admin-only inside the same organization.
-3. Make invitation UPDATE admin-only inside the same organization.
-4. Make invitation DELETE or revoke admin-only inside the same organization.
-5. Add tests proving members cannot invite admins.
-6. Add tests proving admins can invite valid members.
-7. Add tests proving cross-organization invite manipulation is blocked.
-8. Finish Team Permissions Editing backend slice in PR draft form.
-9. Implement last-admin protection if not already complete.
-10. Ensure audit logging works after the required migration is applied.
-11. Keep Module Registry v2 as TS constants unless a database table becomes necessary.
-12. Normalize legacy permissions safely and idempotently.
-13. Confirm plan_id NULL keeps current behavior unchanged.
-14. Implement get_org_entitlements draft without enabling billing provider logic.
-15. Implement member effective access resolver draft.
-16. Prepare exact migration apply order for Slice 1.
-17. Prepare rollback notes for each migration in Slice 1.
-18. Run build/typecheck and targeted tests for changed files.
-19. Publish short report with branch, commit SHA, PR, migrations, tests and risks.
-20. Stop at merge/apply gate and request Victor/ChatGPT approval.
-
-## Antenor — next 20 implementation tasks
-
-1. Rebase Billing UX draft on latest main after PR 12 merge.
-2. Update frontend module labels to match Module Registry v2 domains.
-3. Replace ai labels with Agents where relevant.
-4. Replace payments/expenses UI language with Billing/Finance where relevant.
-5. Implement Team Permissions Editing UI against PR 13 draft API shape.
-6. Add admin-only edit access action in Team UI if not already complete.
-7. Add non-admin read-only Team state.
-8. Add invite blocked-state UI for member users.
-9. Add warning copy for admin-only invitation actions.
-10. Implement current plan and seats cards as UI-only components.
-11. Implement locked domain state for modules not included in plan.
-12. Replace hardcoded legacy module ids in frontend code.
-13. Improve Settings layout for Team, Plan and Account sections.
-14. Improve CRM loading, empty and error states with code changes.
-15. Improve Dashboard loading, empty and error states with code changes.
-16. Improve mobile layout for Team, Settings, CRM and Dashboard.
-17. Fix console errors and obvious warnings found during smoke checks.
-18. Run build/typecheck for frontend changes.
-19. Publish short report with branch, commit SHA, PR, checks and risks.
-20. Stop at merge/deploy gate and request Victor/ChatGPT approval.
-
-Output short status only with branch, commit, PR, report path, blockers and next step.
+Output: status curto — branch, commit, PR, report path, blockers, next step.
