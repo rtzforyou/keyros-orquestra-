@@ -126,6 +126,48 @@ Exit criteria:
 - `automation-engine` fate decided and recorded (ADR).
 - Claude publishes a report per function with repo↔prod verified (`main == prod`).
 
+### EPIC C — WhatsApp Cloud API (Official Meta) Integration — 2026-07-09 (new; Meta app verified)
+
+Design + decisions: **ADR-0005** (keyros-engine). Big architecture shift: from Evolution
+(unofficial) to the official Meta Cloud API. Phased, provider-abstracted, no big-bang.
+**Decisions D1–D5 (ADR-0005) must be confirmed by Victor before Phase 1.** Meta credentials
+inventory needed to start (App ID/Secret, WABA ID, Phone Number ID, System User token,
+verify token, Graph API version).
+
+Impact on existing plan: Evolution webhook hardening (#35) and Evolution key rotation drop
+to **low priority / frozen** (Evolution becomes legacy). EPIC A (Antenor CRM UI) and EPIC B
+(Claude backend cleanup) continue in parallel where they don't touch WhatsApp channels.
+
+Phases (owner · gate):
+
+- **C0 — Decisions & Meta setup** (Victor · decision gate). Confirm D1–D5; provide Meta
+  credentials; create/verify the verify-token and app-secret; decide first number(s).
+- **C1 — Data model & secrets** (Claude · migration gate). `whatsapp_channels`
+  (provider/phone_number_id/waba_id/encrypted token/verify_token/status, org+RLS);
+  `whatsapp_templates` registry; `whatsapp_messages.provider` + status mapping; token
+  encryption (Vault/pgsodium). Migrations written, stop before apply.
+- **C2 — Provider abstraction** (Claude · non-gated → deploy-coupled). `_shared/whatsappProvider.ts`
+  interface + `evolutionProvider.ts` (wrap existing) + `cloudApiProvider.ts`. Route by channel.
+- **C3 — Inbound Cloud webhook** (Claude · deploy gate). New `whatsapp-cloud-webhook`:
+  GET verification (`hub.verify_token`/`hub.challenge`) + POST with mandatory
+  `X-Hub-Signature-256` (HMAC-SHA256, app secret) validation; normalize Meta payload →
+  existing contacts/chats/messages/automations pipeline; delivery statuses.
+- **C4 — Outbound send + 24h window** (Claude · deploy gate). `cloudApiProvider.sendText`/
+  `sendTemplate` via `graph.facebook.com/{phone_number_id}/messages`; enforce the 24-hour
+  customer-service window (free-form inside, template outside); wire `whatsapp-send`/
+  `automation-execute`/`automation-scheduler` through the provider.
+- **C5 — Templates & automations** (Claude · gate). Template sync from Meta + registry;
+  automation actions select a template + map variables to components; scheduler/execute
+  respect the window.
+- **C6 — Onboarding & UI** (Antenor · frontend). Connect-channel flow (manual first →
+  Embedded Signup later), channel status, template management UI, per-org provider display.
+- **C7 — Migration & coexistence** (Claude+Antenor · gates). Per-org provider switch; data
+  continuity; keep Evolution as fallback, then deprecate/remove Evolution functions.
+
+Exit criteria: a studio can connect its own Meta WhatsApp number, receive and send
+(respecting the 24h/template rules) through the CRM, with delivery statuses and tenant
+isolation; Evolution is legacy/removable; tokens encrypted; webhook signature-verified.
+
 ## Phase 0 — Current gates and stabilization
 
 Goal: finish the currently open identity, backend resilience and coordination work before moving to new platform layers.
