@@ -4,7 +4,7 @@ Date: 2026-07-09
 Owner: ChatGPT Architecture Review
 Repository role: Orchestration source of truth
 
-This roadmap defines the current Keyros execution direction after backend resilience reconciliation, shared-layer adoption for retry/scheduler, and EPIC 3 frontend consistency completion.
+This roadmap defines the current Keyros execution direction after backend resilience reconciliation, shared-layer adoption for retry/scheduler, EPIC 3 frontend consistency completion, and the rich shared template renderer merge.
 
 ## Current strategic rule
 
@@ -21,6 +21,7 @@ The Keyros system must remain understandable by humans and agents through offici
 - `automation-retry` shared template adoption: PR #42 merged and deployed as v8.
 - `automation-scheduler` shared template adoption: PR #43 merged and deployed as v24.
 - EPIC 3 — Frontend Consistency & Module Registry Alignment: PR #31 merged.
+- Shared rich template renderer, ADR-0003 Option C: PR #44 merged.
 
 ### Completed EPIC 3 details
 
@@ -38,7 +39,8 @@ Blocks: None
 
 - `main == prod` must remain true for backend Edge Function work.
 - Any Edge Function adoption of `_shared` remains deploy-coupled.
-- `automation-execute` adoption is blocked by architecture decision for the rich template renderer.
+- `automation-execute` rich renderer architecture is resolved by ADR-0003 Option C and PR #44.
+- `automation-execute` adoption is now unlocked, but must be a separate deploy-coupled PR and must stop before deploy for Victor approval.
 - `landing-lead` is public and must remain the last adoption target.
 - Product Core UI may continue after EPIC 3 completion.
 
@@ -76,7 +78,7 @@ Required outcomes:
 - Keep all production deploys, merges and migrations behind gate approval.
 - Maintain repo/prod reconciliation for deployed Edge Functions.
 - Finish shared-layer adoption only with function-by-function deploy-coupled gates.
-- Resolve `automation-execute` rich template architecture before adoption.
+- Adopt `automation-execute` only after the PR #44 rich renderer merge, using a separate deploy-coupled PR.
 - Keep public endpoints, especially `landing-lead`, as high-risk final targets.
 
 Exit criteria:
@@ -204,8 +206,18 @@ Current automation infrastructure state:
 
 - `automation-retry` adopted `_shared/templateEngine.ts` and was deployed as v8.
 - `automation-scheduler` adopted `_shared/templateEngine.ts` and was deployed as v24.
-- `automation-execute` requires rich renderer architecture before adoption.
+- `_shared/templateEngine.ts` now includes `RenderResult` and `renderAutomationTemplate` from ADR-0003 Option C.
+- `renderTemplate` remains a compatible string-returning wrapper.
+- `automation-execute` adoption is the next backend automation target and must be deploy-coupled.
 - `landing-lead` must remain last because it is public.
+
+Next automation step:
+
+- Open a separate PR for `automation-execute` adoption.
+- Remove the inline rich renderer only after validating equivalence with `_shared/renderAutomationTemplate`.
+- Run `deno check` and `deno test`.
+- Validate against deployed version.
+- Stop before deploy for explicit Victor approval.
 
 Exit criteria:
 
