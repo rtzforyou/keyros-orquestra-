@@ -3,123 +3,235 @@
 Date: 2026-07-09
 Freshness rule: this file wins over older chat context when there is conflict.
 
-## Exceptional override — Claude Translation Architecture Audit
+## Current direction
 
-This is an explicit Victor/ChatGPT override for the next Claude execution.
+The previous exceptional Claude Translation Architecture Audit is completed and merged through the approved PR flow.
 
-Reason:
+Current parallel tracks:
 
-The dashboard currently shows mixed languages: sidebar translations follow the selected locale, while dashboard metric labels and some module texts remain hardcoded in Portuguese. This indicates an i18n architecture drift: some UI texts are using translation IDs, while others are embedded directly in React/components/hooks.
+- **Claude:** Repo ↔ Production Reconciliation before any future Edge Function/webhook/send deploy.
+- **Antenor:** Frontend Quality & Internationalization, without entering Product Core yet.
 
-This task is exceptional because Claude is allowed to touch frontend/i18n files normally owned by Antenor. The exception is valid only for this execution and only for translation architecture cleanup.
+Do not start Phase 3 Product Core until the repository/production drift is reconciled and frontend quality debt is reduced.
 
-After this task, normal ownership returns:
+---
 
-- Claude: backend/platform/architecture/security
-- Antenor: frontend/UX/components
+# Claude Track — Repo ↔ Production Reconciliation
 
 ## Objective
 
-Create a safe, consistent translation architecture pass so Keyros UI text is driven by IDs/namespaces instead of hardcoded strings.
+Align the repository with what is already live in production before any future deploy of webhook/send/resilience-related code.
 
-The immediate visible bug to fix:
+## Focus
 
-- Dashboard sidebar is in French, but Dashboard cards remain in Portuguese.
+- Edge Functions
+- rate limiter coverage
+- circuit breaker code
+- resilience migrations
+- deployed-vs-repo drift
+- docs/knowledge corrections
+- report with exact drift map
 
-The architectural rule to enforce:
+## Hard rules
 
-- Business logic uses stable IDs/codes.
-- UI displays translated labels through translation files.
-- Components never hardcode user-facing text unless it is a temporary diagnostic string explicitly marked as such.
+Claude must stop before:
 
-## Claude allowed scope for this exceptional task
+- merge
+- production deploy
+- production data mutation
+- migration apply
+- auth/RLS change
+- Billing Engine or Stripe work
+- destructive operation
 
-Claude may edit:
+---
 
-- translation/i18n files
-- Dashboard frontend files
-- shared UI label helpers
-- TypeScript types related to translation keys if needed
-- docs/knowledge files related to i18n, UX rules, dashboard, glossary or architecture
-- lint/test scripts for detecting hardcoded UI text if safe
-- agent-room report
+# Antenor Track — Frontend Quality & Internationalization
 
-Claude must not edit:
+## Objective
+
+Prepare the frontend for Phase 3 by reducing UI/i18n/design-system debt without depending on backend changes.
+
+Antenor must not start Product Core features yet. This track is platform-quality work only.
+
+## Ownership
+
+Antenor owns:
+
+- React UI
+- UX consistency
+- frontend components
+- responsive behavior
+- frontend i18n cleanup
+- accessibility
+- frontend performance
+- frontend documentation
+
+Antenor must not touch:
 
 - Supabase migrations
-- production data
+- Edge Functions
+- backend logic
 - RLS
-- authentication
-- authorization boundaries
+- auth/authorization boundaries
 - Billing Engine
-- Stripe/payment provider logic
-- unrelated backend features
-- unrelated UI redesigns
+- Stripe/payment logic
+- production data
+- circuit breaker backend/shared implementation
+- CLAUDE.md
 
-## Required tasks
+## Required read order
 
-1. Read `ROADMAP.md`, `MASTER_STATE.md`, `GATES.md`, `CLAUDE_ROLE.md`, `docs/knowledge/`, and current translation/i18n implementation.
-2. Identify the active i18n system and where translations are stored.
-3. Audit Dashboard for hardcoded user-facing text.
-4. Replace dashboard metric/card labels with translation IDs.
-5. Add missing translations for at least the active supported locales already present in the repository.
-6. Use namespaced keys such as:
-   - `dashboard.metrics.openOpportunities`
-   - `dashboard.metrics.newLeads`
-   - `dashboard.metrics.grossRevenue`
-   - `dashboard.metrics.expenses`
-   - `dashboard.metrics.netProfit`
-   - `dashboard.metrics.wonDeals`
-   - `dashboard.metrics.conversionRate`
-   - `dashboard.metrics.averageTicket`
-   - `dashboard.pipelineFunnel.title`
-   - `dashboard.pipelineFunnel.subtitle`
-7. Audit visible Dashboard period filters and chart labels for hardcoded text.
-8. Ensure internal logic does not depend on translated labels.
-9. Ensure stage/status/category logic uses IDs/codes, not visible strings.
-10. Add or update a documentation file explaining Keyros Translation Architecture.
-11. Document the rule: UI text = translation ID; business logic = stable ID/code.
-12. Add a lightweight audit note or script if safe to help find remaining hardcoded UI strings later.
-13. Do not attempt a full-app translation refactor in one PR unless it is small and safe.
-14. Produce a report in `agent-room/reports/` with:
-    - files changed
-    - translation keys added
-    - hardcoded strings removed
-    - remaining i18n debt
-    - screenshots/manual test instructions
-    - blockers
-15. Open a draft PR.
-16. Stop before merge or production deploy.
+1. `ROADMAP.md`
+2. `MASTER_STATE.md`
+3. `ANTENOR_ROLE.md`
+4. `GATES.md`
+5. `REPORT_FORMAT.md`
+6. `docs/knowledge/29-translation-architecture.md`
+7. Relevant frontend/module Knowledge Base docs
+
+## Sprint structure
+
+Antenor may continue automatically through frontend-only safe work until a Hard Gate or the continuous work limit is reached.
+
+Each sprint must:
+
+1. create or reuse a clean frontend-only branch
+2. commit small changes
+3. open or update a draft PR
+4. create an `agent-room/reports/` report
+5. continue to the next frontend-only sprint if no Hard Gate is reached
+
+## Sprint 1 — i18n audit
+
+1. Run or inspect the i18n audit script if available.
+2. Identify visible hardcoded UI strings outside Dashboard.
+3. Prioritize modules with visible user impact:
+   - Messages
+   - CRM
+   - Contacts
+   - Deals/Pipeline
+   - Calendar
+   - Team
+   - Settings
+   - Billing UI
+4. Replace safe hardcoded strings with translation IDs.
+5. Add missing keys in all supported locales already present in the repo.
+6. Do not change business logic.
+7. Do not translate internal IDs, enum values, stage IDs, module keys or route keys.
+
+## Sprint 2 — Dashboard subcomponents
+
+Audit and i18n-clean:
+
+- WhatsAppAutomationStats
+- LeadSourceChart
+- RevenueExpenseChart
+- ExpensesChart
+- UpcomingAppointments
+- RecentActivity
+- PipelineChart
+
+Rules:
+
+- chart labels must come from translation IDs
+- tooltips must come from translation IDs
+- empty/loading/error text must come from translation IDs
+- business calculations must continue using stable IDs/codes
+
+## Sprint 3 — CRM/Contacts/Deals UI readiness
+
+Audit frontend-only state quality:
+
+- loading
+- empty
+- error
+- permission denied
+- plan locked
+- read-only
+- mobile layout
+- drawer/modal labels
+- buttons/actions
+
+Fix safe UI-only issues.
+
+Do not implement new Product Core data sync.
+
+## Sprint 4 — Component consistency
+
+Audit and consolidate frontend components where safe:
+
+- Buttons
+- Cards
+- Inputs
+- Tables
+- Dialogs
+- Drawers
+- Badges
+- Chips
+- Empty States
+- Skeletons
+- Toasts/feedback labels
+
+Avoid broad rewrites. Prefer small, reviewable component reuse.
+
+## Sprint 5 — Accessibility and responsive pass
+
+Audit and fix safe issues for:
+
+- keyboard focus
+- aria-labels
+- contrast
+- mobile overflow
+- tablet layout
+- desktop consistency
+- drawer/modal navigation
+
+## Sprint 6 — Frontend documentation
+
+Update relevant docs only when behavior changes:
+
+- `docs/knowledge/03-design-principles.md`
+- `docs/knowledge/05-dashboard.md`
+- `docs/knowledge/24-ux-rules.md`
+- `docs/knowledge/29-translation-architecture.md`
 
 ## Acceptance criteria
 
-The PR is acceptable when:
+Antenor's PR is acceptable when:
 
-- Dashboard labels follow the selected language consistently.
-- The sidebar and dashboard no longer mix French and Portuguese for core dashboard UI.
-- New keys are namespaced and reusable.
-- No business logic depends on translated text.
-- No backend/migration/auth/billing changes are introduced.
-- Documentation explains the translation architecture rule.
+- it is frontend-only
+- no backend/migration/auth/RLS/billing files are touched
+- no user-facing text is newly hardcoded
+- all new visible UI strings use translation IDs
+- internal logic uses stable IDs/codes, not translated labels
+- build/typecheck status is reported
+- report lists remaining frontend/i18n debt
 
 ## Hard stop conditions
 
-Stop immediately if the work requires:
+Stop immediately if the next action requires:
 
+- backend changes
+- Supabase changes
 - migration
-- production data change
-- auth/RLS change
-- billing provider implementation
-- backend behavior change unrelated to i18n
-- large cross-app refactor that cannot be reviewed safely
+- production deploy
+- auth/RLS/permission boundary change
+- Billing Engine or Stripe logic
+- destructive operation
+- cross-agent conflict
+- unclear ownership
 
-## Previous Platform Consolidation context
+## Report format addition
 
-The following findings still exist but are not the focus of this exceptional task:
+Antenor reports must include:
 
-1. Rate limit is absent in `whatsapp-send`, `automation-bulk-send`, and `automation-campaign-control` despite config existing.
-2. Invitation create/revoke/resend flows need audit logging.
-3. Circuit breaker is planned, not implemented.
-4. Frontend vocabulary drift exists in some areas and should align with Module Registry terminology.
-5. Entitlements exist as planned/incomplete wiring and belong to future Billing Engine work.
-6. Any migration already applied in production but missing from `main` must be reconciled through gate review.
+- modules audited
+- translation keys added
+- hardcoded strings removed
+- files changed
+- build/typecheck result
+- remaining i18n debt
+- remaining UX debt
+- blockers
+- next safe frontend sprint
