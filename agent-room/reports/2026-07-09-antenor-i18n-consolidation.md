@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `e0550b1d3d63b2f9fa2d2a45d0458df8a7199c01`
+- **Commit SHA:** `94ec6decf88cf243640248c8b671a539ebfdb1c1`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -24,10 +24,11 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 5. **Billing plan configuration:** Added `planSoloDesc`, `planSoloLimit`, `planBasicCrmFunnel`, `planClientCalendar`, `planActiveLabel`, `planActivateSolo`, `planMonthSuffix`, `planPopularBadge`, `planTeamDesc`, `planTeamLimit`, `planTeamMgmtFinance`, `planWhatsappAutomation`, `planUpgradeBtn`, `planBusinessDesc`, `planBusinessLimit`, `planCustomReports`, `planMultiCalendar`, `planEnterpriseDesc`, `planEnterpriseLimit`, `planAiAgents`, `planVipSupport`, `planContactSales`.
 6. **Authentication Subtitles:** Added `createYourAccount`, `recoverAccess`, and `defineNewPassword`.
 7. **Overlay dialog helpers:** Added `confirmTitle`, `deleteButtonText`, `deleteContactConfirmTitle`, `deleteDealConfirmTitle`, `deleteExpenseConfirmTitle`, `deleteAutomationConfirmTitle`, `deleteIntegrationConfirmTitle`, `deleteIntegrationConfirmDesc`, `welcomeToTheTeam`, `invitationAcceptedDesc`, and `goToDashboard`.
+8. **Contacts & Calendar dialogs:** Added `errorCreatingContact`, `formContactPhonePlaceholder`, `csvLimitText`, `moreRowsText`, `errorSavingAppointment`, `formAppointmentTitlePlaceholder`, `formNotesPlaceholder`, `save`, `errWhatsAppNumberNotFound`, `errSendFailed`, `errInternalError`, `errSavingPhone`, `phoneUpdatedClickRetry`, `errNetworkSaving`, `sessionExpiredLoginAgain`, `errNetworkRetry`, `autoMessageNotSent`, `automationPrefix`, `newPhoneLabel`, `phoneLabel`, `editBtn`, `attemptPrefix`, `sendingEllipsis`, and `resendMessage`.
 
 ## 4. Build & Typecheck Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.19s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.55s)
 
 ## 5. Remaining i18n Debt
 - Developer guidelines and code payload configurations inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they represent copy/paste snippets for developers.
