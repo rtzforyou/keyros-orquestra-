@@ -1,34 +1,89 @@
 # KEYROS ROADMAP
 
-Date: 2026-07-08
+Date: 2026-07-09
 Owner: ChatGPT Architecture Review
 Repository role: Orchestration source of truth
 
-This roadmap defines the direction after the current WhatsApp identity and Knowledge Base stabilization work.
+This roadmap defines the current Keyros execution direction after backend resilience reconciliation, shared-layer adoption for retry/scheduler, and EPIC 3 frontend consistency completion.
 
 ## Current strategic rule
 
-Do not expand new product modules before the Knowledge Base exists.
+Do not expand new product modules before the Product Core is stable and readable by agents.
 
-The Keyros system must first become understandable by humans and agents through official documentation. After that, implementation can continue with less context loss, fewer contradictions and safer cross-agent work.
+The Keyros system must remain understandable by humans and agents through official documentation, reports and clear gates. Implementation can continue only when context loss, contradictions and cross-agent drift are controlled.
+
+## Current execution state — 2026-07-09
+
+### Completed / merged
+
+- Backend repo/prod drift reconciliation: PR #36 merged.
+- Shared layer additive foundation: PR #37 merged.
+- `automation-retry` shared template adoption: PR #42 merged and deployed as v8.
+- `automation-scheduler` shared template adoption: PR #43 merged and deployed as v24.
+- EPIC 3 — Frontend Consistency & Module Registry Alignment: PR #31 merged.
+
+### Completed EPIC 3 details
+
+EPIC: EPIC 3 — Frontend Consistency & Module Registry Alignment
+Status: COMPLETED
+Sprints executed: 1
+Product branch: `antenor/frontend-i18n-consolidation`
+Product merge commit: `94e7ad3ad5897209343d0b50ddfa0c4c58563287`
+Original Antenor commit: `18a2be6ce8e30bca2d8293992b8d0d662e6cf4e5`
+Product PR: #31
+Report: `2026-07-09-antenor-i18n-consolidation.md`
+Blocks: None
+
+### Current gates
+
+- `main == prod` must remain true for backend Edge Function work.
+- Any Edge Function adoption of `_shared` remains deploy-coupled.
+- `automation-execute` adoption is blocked by architecture decision for the rich template renderer.
+- `landing-lead` is public and must remain the last adoption target.
+- Product Core UI may continue after EPIC 3 completion.
+
+### Next recommended EPIC
+
+EPIC 3 Loop 2 — Queue Area 3: CRM / Contacts / Deals UI Readiness.
+
+Goal: prepare the visible Product Core CRM UI for real-data flows without introducing new backend drift.
+
+Scope:
+
+- Contacts UI readiness.
+- Deals UI readiness.
+- CRM queue states.
+- Pipeline UI consistency.
+- Loading, empty and error states.
+- Translation/i18n continuity after EPIC 3.
+- Module Registry alignment in visible CRM areas.
+- No new backend model changes unless separately gated.
+- No AI agents in this loop.
+
+Exit criteria:
+
+- CRM, Contacts and Deals screens are consistent, usable and ready to consume real data.
+- No mock-only UI behavior is presented as production behavior.
+- Module availability, labels, route guards and translations are aligned.
+- Antenor publishes a completion report with branch, commit, PR, tested flows and blockers.
 
 ## Phase 0 — Current gates and stabilization
 
-Goal: finish the currently open identity and coordination work before moving to new platform layers.
+Goal: finish the currently open identity, backend resilience and coordination work before moving to new platform layers.
 
 Required outcomes:
 
-- Validate and close PR #17 for group identity.
-- Ensure group conversations use `group.subject` as identity.
-- Ensure direct conversations keep the corrected interlocutor identity.
-- Confirm no regression for `DIRECT`, `GROUP`, `CHANNEL`, and `UNKNOWN` conversation types.
 - Keep all production deploys, merges and migrations behind gate approval.
+- Maintain repo/prod reconciliation for deployed Edge Functions.
+- Finish shared-layer adoption only with function-by-function deploy-coupled gates.
+- Resolve `automation-execute` rich template architecture before adoption.
+- Keep public endpoints, especially `landing-lead`, as high-risk final targets.
 
 Exit criteria:
 
 - All active PRs are reviewed.
-- Identity rules are documented.
-- No known blocker remains in WhatsApp identity.
+- Identity and backend resilience rules are documented.
+- No known drift remains between repository and production for critical functions.
 
 ## Phase 1 — Keyros Knowledge Base
 
@@ -96,6 +151,10 @@ Priority modules:
    - CRM linkage
    - Future automation triggers
 
+Current Phase 3 loop:
+
+- EPIC 3 Loop 2 — Queue Area 3: CRM / Contacts / Deals UI Readiness.
+
 Exit criteria:
 
 - Dashboard uses real data or explicitly labeled placeholders.
@@ -140,6 +199,13 @@ Required outcomes:
 - Failure handling.
 - Rate limiting.
 - Human-readable automation reports.
+
+Current automation infrastructure state:
+
+- `automation-retry` adopted `_shared/templateEngine.ts` and was deployed as v8.
+- `automation-scheduler` adopted `_shared/templateEngine.ts` and was deployed as v24.
+- `automation-execute` requires rich renderer architecture before adoption.
+- `landing-lead` must remain last because it is public.
 
 Exit criteria:
 
