@@ -50,16 +50,19 @@ While Victor is away, Hard-Gate items MUST NOT be executed. Instead:
 
 Merged 2026-07-09 (late) under Victor's "aprovo merge": all engine docs/report/ADR PRs (#1,#3–#13) merged into engine main; product **#33** (debug kill-stub source reconcile — repo now == prod) and **#32** (docs edge-function inventory) merged. Product main verified healthy: debug stubs 410, automation adoptions intact, rich template present. Deploy-coupled security PRs #34/#35 were NOT merged (merge without deploy = drift) — they stay below.
 
+Security deploy executed 2026-07-09 (late) under Victor's "faz o deploy de segurança": public write endpoints neutralized in production (410) after logs confirmed **zero active traffic** — `sync-whatsapp-history` v8, `lead-intake` v7, `automation-engine` v8 (ADR-0004). #34 merged; automation-engine stub added to repo (PR #53). The 2 `"Simulated Insert"` junk rows in `messages` were deleted (0 remaining). All validated (POST → 410, no I/O). `main == prod`.
+
 ### AWAITING VICTOR — gate queue (do NOT execute without Victor)
-1. Deploy product PR #34 (`sync-whatsapp-history` / `lead-intake` 410 stubs).
-2. Deploy product PR #35 (`whatsapp-webhook` shared-secret) + set `WHATSAPP_WEBHOOK_SECRET` + re-register Evolution webhooks.
-3. Rotate `WHATSAPP_GLOBAL_API_KEY` (exposed via debug functions).
-4. Clean 2 `"Simulated Insert"` rows in `messages` (prod data).
-5. ~~Merge product PR #33~~ **DONE** (merged; repo == prod for debug stubs).
-6. Triage: #32 (docs) **MERGED**; #30 (i18n — verify vs #31) and #26 (stale) still pending — frontend, leave for Antenor/triage.
-7. Each `whatsappIdentity` adoption PR: merge + deploy together (deploy-coupled).
-8. `automation-engine` stub/keep decision (architecture) — **ADR-0004 recommends 410 stub + delete**; couple with `lead-intake` stub (PR #34). Confirm no unknown external caller via logs before delete.
-9. Follow-up: type-check fix in `automation-execute` (`result.error` vs `updateAutomationStatus`).
+1. ~~Deploy #34 stubs~~ **DONE** (sync-whatsapp-history v8, lead-intake v7, automation-engine v8 → 410; validated). Residual risk: unknown external `lead-intake` caller — rollback = redeploy source.
+2. **DEFERRED — Deploy #35 (`whatsapp-webhook` shared-secret).** #35's branch is **STALE** (pre-`_shared/rateLimiter`); merging it would regress the webhook's rate limiter. Also the protection is inactive until `WHATSAPP_WEBHOOK_SECRET` is set + Evolution webhooks re-registered (coordination). **Action:** rebuild the anti-spoofing block on top of CURRENT `main` webhook, deploy, then set secret + re-register — one coordinated pass. Do NOT merge #35 as-is.
+3. **FLAGGED — Rotate `WHATSAPP_GLOBAL_API_KEY`.** Needs Evolution-side key change too (the edge functions use it to auth to Evolution); cannot be done via MCP alone. Requires Victor/Evolution admin: set new key in Evolution + update Supabase secret together, else all WhatsApp breaks.
+4. ~~Clean 2 `"Simulated Insert"` rows~~ **DONE** (deleted by id; 0 remaining).
+5. ~~Merge product PR #33~~ **DONE**.
+6. Triage: #32 **MERGED**; #30 / #26 still pending — frontend, leave for Antenor/triage.
+7. Delete the neutralized functions from prod (`sync-whatsapp-history`, `lead-intake`, `automation-engine`, and the debug trio) — optional cleanup; stubs are already safe. Confirm no caller first.
+8. ~~`automation-engine` decision~~ **DONE** (ADR-0004: stubbed v8; repo stub PR #53). Delete pending (item 7).
+9. `whatsappIdentity` adoption — only `whatsapp-webhook` uses it (low value/high risk); do it coupled with the #35 webhook rebuild if at all.
+10. Follow-up: type-check fix in `automation-execute` (`result.error` vs `updateAutomationStatus`).
 
 ## Stop conditions (unchanged)
 Hard Gates; ownership conflict; uncertainty; blocked EPIC; no eligible non-gated work inside ownership; or continuous-work limit from `GATES.md`. On stop, update the report and this file; do not wait in chat.
