@@ -48,13 +48,15 @@ While Victor is away, Hard-Gate items MUST NOT be executed. Instead:
 - Keep producing non-gated checkpoints (branches, draft PRs, tests, reports, ADRs) so progress never stalls.
 - When Victor returns, he clears the gate queue in one review pass.
 
+Merged 2026-07-09 (late) under Victor's "aprovo merge": all engine docs/report/ADR PRs (#1,#3–#13) merged into engine main; product **#33** (debug kill-stub source reconcile — repo now == prod) and **#32** (docs edge-function inventory) merged. Product main verified healthy: debug stubs 410, automation adoptions intact, rich template present. Deploy-coupled security PRs #34/#35 were NOT merged (merge without deploy = drift) — they stay below.
+
 ### AWAITING VICTOR — gate queue (do NOT execute without Victor)
 1. Deploy product PR #34 (`sync-whatsapp-history` / `lead-intake` 410 stubs).
 2. Deploy product PR #35 (`whatsapp-webhook` shared-secret) + set `WHATSAPP_WEBHOOK_SECRET` + re-register Evolution webhooks.
 3. Rotate `WHATSAPP_GLOBAL_API_KEY` (exposed via debug functions).
 4. Clean 2 `"Simulated Insert"` rows in `messages` (prod data).
-5. Merge product PR #33 (debug kill-stub source reconciliation; stubs already deployed).
-6. Triage product PRs #32 (docs), #30 (i18n — verify vs #31), #26 (stale — rebase or close).
+5. ~~Merge product PR #33~~ **DONE** (merged; repo == prod for debug stubs).
+6. Triage: #32 (docs) **MERGED**; #30 (i18n — verify vs #31) and #26 (stale) still pending — frontend, leave for Antenor/triage.
 7. Each `whatsappIdentity` adoption PR: merge + deploy together (deploy-coupled).
 8. `automation-engine` stub/keep decision (architecture) — **ADR-0004 recommends 410 stub + delete**; couple with `lead-intake` stub (PR #34). Confirm no unknown external caller via logs before delete.
 9. Follow-up: type-check fix in `automation-execute` (`result.error` vs `updateAutomationStatus`).
