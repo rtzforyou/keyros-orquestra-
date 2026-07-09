@@ -9,21 +9,58 @@ Vector is now a separate experiment/repository. This file is only for Keyros CRM
 
 ---
 
-# Update — 2026-07-09 (late) · Two active EPICs approved by Victor (ChatGPT role temporarily held by Claude)
+# AUTONOMOUS OPERATING PLAN — 2026-07-09 (no-chat mode)
 
-Since the state below was written, the backend automation shared-layer work advanced and is now COMPLETE:
+Context: ChatGPT is temporarily unavailable; Claude holds the orchestrator role. Victor is stepping back from live chat. **Both agents advance from these `.md` files + GitHub issues, not from chat.** This section is the freshest override and wins over everything below.
 
-- `automation-retry` → deployed v8; `automation-scheduler` → v24; `automation-execute` → v23. All import `_shared/templateEngine.ts` (ADR-0003 Option C). `main == prod`, no drift.
-- PRs #42, #43, #44, #45 merged. Rich `renderAutomationTemplate` + `RenderResult` live in `_shared`; `renderTemplate` is a compatible wrapper.
+## State snapshot
 
-Two EPICs are now active in parallel (details in ROADMAP.md → "Active EPICs — 2026-07-09"):
+Backend (Claude) — DONE and deployed:
+- Repo↔prod reconciliation (#36), shared foundation (#37), template adoptions: `automation-retry` v8 (#42), `automation-scheduler` v24 (#43), rich renderer (#44), `automation-execute` v23 (#45). Template shared-layer COMPLETE; `main == prod`, no drift.
+- `_shared/whatsappIdentity.ts` + Deno tests already exist (from #37). Adoption in functions is still pending (deploy-coupled).
 
-- **EPIC A — Antenor (frontend):** EPIC 3 Loop 2 — CRM / Contacts / Deals UI Readiness.
-- **EPIC B — Claude (backend):** Backend Automation Shared-Layer Finalization + Security Remediation Close-out. Security-first: (1) classify/remediate remaining public Edge Functions + document risk; (2) `whatsappIdentity` adoption in `whatsapp-webhook`/`whatsapp-send` (additive→deploy-coupled); (3) `automation-engine` legacy decision (ADR). Every deploy / key rotation / prod-data cleanup is a Hard Gate — stop for Victor.
+Frontend (Antenor) — DONE:
+- EPIC 3 Frontend Consistency & Module Registry Alignment (#31 merged).
+- Next queue formalized as GitHub issues: #46 (MASTER tracker) → #47–#52 (EPIC A1–A6).
 
-Still pending security gates (unchanged, awaiting Victor approval): deploy PR #34 (`sync-whatsapp-history`/`lead-intake` stubs), deploy PR #35 (`whatsapp-webhook` secret), rotate `WHATSAPP_GLOBAL_API_KEY`, clean 2 `"Simulated Insert"` rows in `messages`.
+Security — PENDING GATES (awaiting Victor; must NOT block other work):
+- Debug trio (`debug-whatsapp`/`debug-api`/`diagnostic`) neutralized with 410 stubs in prod. PRs #33/#34/#35 open. Pending: deploy #34, deploy #35, rotate `WHATSAPP_GLOBAL_API_KEY`, clean 2 `"Simulated Insert"` rows.
 
-The detailed per-agent queues below remain valid as the working backlog.
+## Active assignments — advance without chat
+
+### Antenor (frontend)
+Work the issue queue in order, one EPIC at a time, dedicated branch + PR + report per EPIC:
+1. **NOW:** Issue **#47 — EPIC A1: CRM / Contacts / Deals UI Readiness.**
+2. Then #48 (A2 CRM Interaction Polish) → #49 (A3 Finance/Dashboard UI) → #50 (A4 Calendar/Messages/Tasks) → #51 (A5 Settings/Team/Billing) → #52 (A6 QA/Commercial Polish).
+Rules: frontend only; safe empty/loading/error/read-only/permission-denied/plan-locked states; all visible text via i18n IDs; logic on stable codes not labels; no backend/Edge/migration/RLS/prod/Stripe. If blocked by missing backend, show a safe placeholder and report the blocker. Also open for later: #14 (Messages UI), #39 (Finance/Dashboard real-data impl — only after Claude #38), #41 (AI Foundation scaffold — later phase).
+
+### Claude (backend / platform)
+**EPIC B — Backend Automation Shared-Layer Finalization + Security Close-out** (see ROADMAP → Active EPICs → EPIC B). Non-gated first; pile gated items in the gate queue:
+1. **NOW (non-gated):** Prepare `whatsappIdentity` adoption PRs — `whatsapp-send`, then `whatsapp-webhook` (remove inline `normalizeJid`/`getPhone`/`normalizePhone` → import from `_shared/whatsappIdentity.ts`; prove token-identical; `deno check` + `deno test`; open draft PR; STOP before deploy). One function per PR, deploy-coupled.
+2. **Architecture gate:** `automation-engine` legacy — write an ADR (stub vs keep) and stop for approval.
+3. **Queued after EPIC B:** issue **#38** (validate Finance/Dashboard real-data providers before agents), then **#40** (AI Foundation: Agent Registry / Tool Registry / Event Bus — DESIGN/spec, no implementation).
+Rules: backend/platform/security/docs only; no frontend; no Stripe. Every deploy / key rotation / prod-data / migration / RLS = Hard Gate → stop.
+
+## Gate posture in no-chat mode
+
+While Victor is away, Hard-Gate items MUST NOT be executed. Instead:
+- Accumulate them in the single "AWAITING VICTOR — gate queue" below, each as a ready PR/plan.
+- Keep producing non-gated checkpoints (branches, draft PRs, tests, reports, ADRs) so progress never stalls.
+- When Victor returns, he clears the gate queue in one review pass.
+
+### AWAITING VICTOR — gate queue (do NOT execute without Victor)
+1. Deploy product PR #34 (`sync-whatsapp-history` / `lead-intake` 410 stubs).
+2. Deploy product PR #35 (`whatsapp-webhook` shared-secret) + set `WHATSAPP_WEBHOOK_SECRET` + re-register Evolution webhooks.
+3. Rotate `WHATSAPP_GLOBAL_API_KEY` (exposed via debug functions).
+4. Clean 2 `"Simulated Insert"` rows in `messages` (prod data).
+5. Merge product PR #33 (debug kill-stub source reconciliation; stubs already deployed).
+6. Triage product PRs #32 (docs), #30 (i18n — verify vs #31), #26 (stale — rebase or close).
+7. Each `whatsappIdentity` adoption PR: merge + deploy together (deploy-coupled).
+8. `automation-engine` stub/keep decision (architecture).
+9. Follow-up: type-check fix in `automation-execute` (`result.error` vs `updateAutomationStatus`).
+
+## Stop conditions (unchanged)
+Hard Gates; ownership conflict; uncertainty; blocked EPIC; no eligible non-gated work inside ownership; or continuous-work limit from `GATES.md`. On stop, update the report and this file; do not wait in chat.
 
 ---
 
