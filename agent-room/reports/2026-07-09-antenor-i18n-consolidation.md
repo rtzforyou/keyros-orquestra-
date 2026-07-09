@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `18a2be6ce8e30bca2d8293992b8d0d662e6cf4e5`
+- **Commit SHA:** `c817e2798e29a99723fa3dfb3a9c7929d20c5bb1`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -27,13 +27,14 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels. Localized phone number input placeholder formats.
 9. **Preferences Settings Feedback:** Added localized saved message notification string keys.
 10. **Payments & Billing Dialogs:** Added Stripe secure badge compliant footers and billing instructions translation keys.
+11. **Integrations & Reconnecting States:** Added Google Calendar sync selectors, sync mode directions, and Evolution API reconnecting state badge translation keys.
 
 ### Layout & Responsiveness:
 - **Mobile Responsive Drawer Layout:** Implemented fixed responsive side drawer overlays with close buttons and mobile hamburger menu headers in `App.tsx` and `Sidebar.tsx`.
 
 ## 4. Build, Typecheck & Synchronization Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.23s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.12s)
 - **Repo Reconciliation:** Merged latest remote `main` branch cleanly into `antenor/frontend-i18n-consolidation` and successfully validated Vite build.
 
 ## 5. Remaining i18n Debt
