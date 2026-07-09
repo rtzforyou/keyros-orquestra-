@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `94ec6decf88cf243640248c8b671a539ebfdb1c1`
+- **Commit SHA:** `f5ef1bdce9c7501a3556c5478479ec5087fdbcc0`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -18,17 +18,17 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 
 ### Translations Added (`lib/translations.ts`):
 1. **Dashboard:** Added and wired `t.dashboardPeriods.*` (today, week, month, lastMonth, year, custom), KPI card titles (`netProfit`, `wonDeals`, `conversionRate`, `averageTicket`, `dealsUnit`, `finalizedUnit`, `wonDealsUnit`), and sync status indicators.
-2. **WhatsApp Connection Flow:** Added `connectStudioWhatsAppTitle`, `connectStudioWhatsAppDesc`, `tryAgain`, `checkingConnectionState`, `whatsappReconnectingMsg`, `secureE2ELink`, `errorLoadingQrCode`, `qrCodeExpirationHint`, `generateNewQr`, `wsStep1Text`, `wsStep2Text`, `wsStep3Text`, `whatsappConnectedTitle`, and `syncingRealtimeMessages`.
-3. **Pipeline columns & settings:** Added `columnAlreadyExistsInPipeline`, `pipelineMustHaveAtLeastOneColumn`, `pipelineConfigureColumnsDesc`, `newColumnNamePlaceholder`, `noColumnsConfigured`.
-4. **Studio Artists & Team:** Added `memberHeader`, `artistNameLabel`, `addInternalArtist`, `identificationColor`, `addArtist`, `createArtistProfileDesc`, `usedInCalendarToIdentify`, `saving`, `internalArtistsDescription`, `noInternalArtistsFound`, and `manageArtistsAndCalendarIdentities`.
-5. **Billing plan configuration:** Added `planSoloDesc`, `planSoloLimit`, `planBasicCrmFunnel`, `planClientCalendar`, `planActiveLabel`, `planActivateSolo`, `planMonthSuffix`, `planPopularBadge`, `planTeamDesc`, `planTeamLimit`, `planTeamMgmtFinance`, `planWhatsappAutomation`, `planUpgradeBtn`, `planBusinessDesc`, `planBusinessLimit`, `planCustomReports`, `planMultiCalendar`, `planEnterpriseDesc`, `planEnterpriseLimit`, `planAiAgents`, `planVipSupport`, `planContactSales`.
-6. **Authentication Subtitles:** Added `createYourAccount`, `recoverAccess`, and `defineNewPassword`.
-7. **Overlay dialog helpers:** Added `confirmTitle`, `deleteButtonText`, `deleteContactConfirmTitle`, `deleteDealConfirmTitle`, `deleteExpenseConfirmTitle`, `deleteAutomationConfirmTitle`, `deleteIntegrationConfirmTitle`, `deleteIntegrationConfirmDesc`, `welcomeToTheTeam`, `invitationAcceptedDesc`, and `goToDashboard`.
-8. **Contacts & Calendar dialogs:** Added `errorCreatingContact`, `formContactPhonePlaceholder`, `csvLimitText`, `moreRowsText`, `errorSavingAppointment`, `formAppointmentTitlePlaceholder`, `formNotesPlaceholder`, `save`, `errWhatsAppNumberNotFound`, `errSendFailed`, `errInternalError`, `errSavingPhone`, `phoneUpdatedClickRetry`, `errNetworkSaving`, `sessionExpiredLoginAgain`, `errNetworkRetry`, `autoMessageNotSent`, `automationPrefix`, `newPhoneLabel`, `phoneLabel`, `editBtn`, `attemptPrefix`, `sendingEllipsis`, and `resendMessage`.
+2. **WhatsApp Connection Flow:** Added connection states, loading checks, QR code renewals, and success notifications.
+3. **Pipeline columns & settings:** Added stage organizing titles, columns constraints, and customization inputs.
+4. **Studio Artists & Team:** Added internal artist profile prompts, name placeholder fields, color configuration helpers, and empty listing states.
+5. **Billing plan configuration:** Added solo, basic, team, business, and enterprise descriptions, limits, pricing suffixes, and CTAs.
+6. **Authentication Subtitles:** Added signup, reset, and password recovery subheadings.
+7. **Overlay dialog helpers:** Added confirm, delete, and welcoming overlay keys.
+8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels.
 
 ## 4. Build & Typecheck Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.55s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.23s)
 
 ## 5. Remaining i18n Debt
 - Developer guidelines and code payload configurations inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they represent copy/paste snippets for developers.
