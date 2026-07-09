@@ -5,7 +5,7 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `1b62144d3fe25e36f6d2f33c399b17781bcf704e`
+- **Commit SHA:** `a112af5f5ca988470a1a0db25f3815e5ec024c04`
 - **Status:** **SUCCESS**
 
 ## 2. UX Polish: Native Popup Removal
@@ -26,10 +26,11 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 7. **Overlay dialog helpers:** Added confirm, delete, and welcoming overlay keys.
 8. **Contacts, Calendar & Messages:** Added CSV size limits, remainder rows, appointment errors/placeholders, conversation list tab filters, channel buttons, AI quick prompts, empty state cards, and AI control toggle labels.
 9. **Preferences Settings Feedback:** Added localized saved message notification string keys.
+10. **Payments & Billing Dialogs:** Added Stripe secure badge compliant footers and billing instructions translation keys.
 
 ## 4. Build & Typecheck Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.03s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.43s)
 
 ## 5. Remaining i18n Debt
 - Developer guidelines and code payload configurations inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they represent copy/paste snippets for developers.
