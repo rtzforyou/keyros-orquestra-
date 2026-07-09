@@ -35,6 +35,32 @@ Product PR: #31
 Report: `2026-07-09-antenor-i18n-consolidation.md`
 Blocks: None
 
+### Antenor Product Core frontend queue
+
+Master tracker: product issue #46.
+
+Official sequence until Product Core frontend is commercially usable:
+
+1. Issue #47 — EPIC A1: CRM / Contacts / Deals UI Readiness.
+2. Issue #48 — EPIC A2: CRM Interaction Polish.
+3. Issue #49 — EPIC A3: Finance / Dashboard UI Readiness.
+4. Issue #50 — EPIC A4: Calendar / Messages / Tasks Product Flow.
+5. Issue #51 — EPIC A5: Settings / Team / Billing Surface Readiness.
+6. Issue #52 — EPIC A6: Product Core QA / Commercial Polish.
+
+Rules for Antenor:
+
+- Work one EPIC at a time unless Victor/ChatGPT explicitly splits work.
+- Each EPIC must use a dedicated branch and PR.
+- Each EPIC must publish a report in `agent-room/reports/`.
+- No backend, Edge Function, migration, RLS or production-data change without separate gate.
+- No mock should be presented as production data.
+- Stop and report if a frontend task depends on missing backend/schema work.
+
+Current Antenor next action:
+
+- Start Issue #47 — EPIC A1: CRM / Contacts / Deals UI Readiness.
+
 ### Current gates
 
 - `main == prod` must remain true for backend Edge Function work.
@@ -42,11 +68,11 @@ Blocks: None
 - `automation-execute` rich renderer architecture is resolved by ADR-0003 Option C and PR #44.
 - `automation-execute` adoption is now unlocked, but must be a separate deploy-coupled PR and must stop before deploy for Victor approval.
 - `landing-lead` is public and must remain the last adoption target.
-- Product Core UI may continue after EPIC 3 completion.
+- Product Core frontend continues through Antenor issues #46–#52.
 
 ### Next recommended EPIC
 
-EPIC 3 Loop 2 — Queue Area 3: CRM / Contacts / Deals UI Readiness.
+EPIC A1 — CRM / Contacts / Deals UI Readiness.
 
 Goal: prepare the visible Product Core CRM UI for real-data flows without introducing new backend drift.
 
@@ -153,15 +179,21 @@ Priority modules:
    - CRM linkage
    - Future automation triggers
 
-Current Phase 3 loop:
+Current Phase 3 frontend sequence:
 
-- EPIC 3 Loop 2 — Queue Area 3: CRM / Contacts / Deals UI Readiness.
+- A1: CRM / Contacts / Deals UI Readiness — issue #47.
+- A2: CRM Interaction Polish — issue #48.
+- A3: Finance / Dashboard UI Readiness — issue #49.
+- A4: Calendar / Messages / Tasks Product Flow — issue #50.
+- A5: Settings / Team / Billing Surface Readiness — issue #51.
+- A6: Product Core QA / Commercial Polish — issue #52.
 
 Exit criteria:
 
 - Dashboard uses real data or explicitly labeled placeholders.
 - Deals can drive financial understanding.
 - Core CRM flows can be used by a real business without mock-only behavior.
+- Product Core frontend can be used as a commercial minimum product.
 
 ## Phase 4 — Billing Engine
 
