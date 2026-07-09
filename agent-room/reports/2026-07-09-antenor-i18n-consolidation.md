@@ -5,10 +5,15 @@ Author: Antenor (Frontend Agent)
 ## 1. Summary of Work Done
 - **Branch:** `antenor/frontend-i18n-consolidation`
 - **PR:** #31
-- **Commit SHA:** `e8e0f1d50a3e195f7b3292e0440e45c9f14d4d84`
+- **Commit SHA:** `e0550b1d3d63b2f9fa2d2a45d0458df8a7199c01`
 - **Status:** **SUCCESS**
 
-## 2. Modules Audited & Localization Updates
+## 2. UX Polish: Native Popup Removal
+We replaced blocking browser dialogs and alert panels with modern, responsive React-based overlays in all key areas:
+1. **Onboarding:** Swapped browser `alert()` upon team invitation acceptance in `App.tsx` with an inline check banner and a welcome screen.
+2. **Deletions:** Replaced standard `window.confirm()` calls inside `ContactsContent.tsx` (contacts), `PipelineContent.tsx` (deals), `ExpensesContent.tsx` (expenses), `AutomationsContent.tsx` (automations), and `LandingIntegrationsSettings.tsx` (landing webhooks) with premium Dialog confirmation modals.
+
+## 3. Modules Audited & Localization Updates
 We performed an audit of all active UI views, successfully extracting hardcoded user-facing Portuguese and English strings into the central i18n catalog:
 
 ### Translations Added (`lib/translations.ts`):
@@ -18,14 +23,15 @@ We performed an audit of all active UI views, successfully extracting hardcoded 
 4. **Studio Artists & Team:** Added `memberHeader`, `artistNameLabel`, `addInternalArtist`, `identificationColor`, `addArtist`, `createArtistProfileDesc`, `usedInCalendarToIdentify`, `saving`, `internalArtistsDescription`, `noInternalArtistsFound`, and `manageArtistsAndCalendarIdentities`.
 5. **Billing plan configuration:** Added `planSoloDesc`, `planSoloLimit`, `planBasicCrmFunnel`, `planClientCalendar`, `planActiveLabel`, `planActivateSolo`, `planMonthSuffix`, `planPopularBadge`, `planTeamDesc`, `planTeamLimit`, `planTeamMgmtFinance`, `planWhatsappAutomation`, `planUpgradeBtn`, `planBusinessDesc`, `planBusinessLimit`, `planCustomReports`, `planMultiCalendar`, `planEnterpriseDesc`, `planEnterpriseLimit`, `planAiAgents`, `planVipSupport`, `planContactSales`.
 6. **Authentication Subtitles:** Added `createYourAccount`, `recoverAccess`, and `defineNewPassword`.
+7. **Overlay dialog helpers:** Added `confirmTitle`, `deleteButtonText`, `deleteContactConfirmTitle`, `deleteDealConfirmTitle`, `deleteExpenseConfirmTitle`, `deleteAutomationConfirmTitle`, `deleteIntegrationConfirmTitle`, `deleteIntegrationConfirmDesc`, `welcomeToTheTeam`, `invitationAcceptedDesc`, and `goToDashboard`.
 
-## 3. Build & Typecheck Results
+## 4. Build & Typecheck Results
 - **TypeScript Compile (`npx tsc --noEmit`):** PASS (0 errors)
-- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.05s)
+- **Vite Build (`npm run build`):** PASS (Successful minification & bundling in 2.19s)
 
-## 4. Remaining i18n Debt
-- Code snippets and webhook hints inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they display technical developer instructions (payload samples, WPForms URL structures, curl snippets). These should remain technical copy.
-- Automations config options (e.g. "Quando um contato é criado" labels in `AutomationDialog.tsx` & `AutomationsContent.tsx`) are currently mapped to Portuguese database fields or config structures; translating these dynamically will require careful backend integration alignment in the next phase.
+## 5. Remaining i18n Debt
+- Developer guidelines and code payload configurations inside `LandingIntegrationsSettings.tsx` remain hardcoded in Portuguese because they represent copy/paste snippets for developers.
+- Automations event triggers currently rely on PT database fields; migrating these will require backend sync operations in the next phase.
 
-## 5. Next Safe Frontend Work Item
-- Continue onto **Queue Area 3 — CRM/Contacts/Deals UI readiness** to audit empty/loading/error states for the primary pipeline and contact lists.
+## 6. Next Safe Frontend Work Item
+- Continue onto **Queue Area 3 — CRM/Contacts/Deals UI readiness** to audit mobile layouts, drawers, and modal accessibility tags.
