@@ -4,6 +4,20 @@ Data: 2026-07-10 · Autor: Claude / Fable · Orquestra #3
 Branch: `claude/project-memory-pm1` · PR draft: easytattoo-crm#55
 Migração: `20260720000000_project_memory_pm1.sql` — **NÃO aplicada**.
 
+## Correções Mission A (2026-07-10, commit `3fa82ce`)
+1. **1 deal → N project files:** removido o unique parcial por `deal_id`. Índice
+   normal `idx_project_files_deal` mantido. Dedup técnico opcional por **comando**
+   via `idempotency_key` (unique parcial por org) — sem cardinalidade rígida.
+2. **Memória nunca apagada:** `contact_id` → **nullable + ON DELETE SET NULL +
+   `contact_snapshot`** (identidade mínima). Motivo: existe fluxo real
+   `useContacts.deleteContact` → `RESTRICT` partiria a feature (confirmado no
+   código). `deal_id` mantém SET NULL. **Nenhum CASCADE comercial.** DELETE físico
+   bloqueado; archive preserva todos os filhos.
+3. **Storage dedicado:** bucket privado **`project-memory`** (não reutilizar
+   `studio-files`) — só desenho/docs (sem bucket/policy/upload/URL).
+Testes SQL atualizados (deal→2, delete deal/contact preserva + snapshot, archive
+preserva filhos, isolamento, anon, append-only, sem-unique-por-deal). NO APPLY/MERGE.
+
 ## Princípio
 Domínio **separado** do pipeline comercial. Nada de dados artísticos/técnicos em
 `deals`. Fluxo: `Contact → (Deal opcional) → Project File → References/Notes/AI/Events`.
