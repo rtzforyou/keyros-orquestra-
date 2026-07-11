@@ -8,7 +8,7 @@ sem Discovery+Architecture+aprovação. Foundation **FROZEN** (só bugs crítico
 | # | EPIC | Estado | Branch / PR |
 |---|---|---|---|
 | 0 | Product Polish | ✅ **DONE** (a11y + audit) | `claude/epic0-product-polish` · PR #59 |
-| 1 | Project Memory PM2→PM9 | ⏭️ **NEXT** | (PM1 pronto: PR #55; PM2 = implementação code-only) |
+| 1 | Project Memory PM2→PM9 | ✅ **DONE — GATE** (versionado, não aplicado) | `claude/project-memory-pm2-pm9` · PR #60 (dep. PM1 #55) |
 | 2 | Interactive Tattoo Briefing | pendente (Gate) | — |
 | 3 | CRM Completion | pendente (Gate) | — |
 | 4 | Financial Dashboard | pendente (Gate) | — |
