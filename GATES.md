@@ -1,132 +1,60 @@
-# GATES
+# KEYROS GATES — FRAMEWORK V1
 
-Keyros Orquestra uses two execution controls:
+O agente para e aguarda Victor antes de qualquer ação abaixo.
 
-1. **Hard Gates** — agents must stop and wait for Victor/ChatGPT.
-2. **Autonomous Checkpoints** — agents must commit, open/update draft PRs, report, then continue automatically if no Hard Gate is crossed.
+## Gate 1 — Merge
 
-## Hard Gates
+- merge de PR;
+- fechamento de branch com integração na main.
 
-Agents must stop and ask Victor or ChatGPT before:
+## Gate 2 — Deploy
 
-- merge to `main`
-- production deploy
-- production data change
-- database migration apply
-- auth, RLS, permissions, tenant isolation or access boundary change
-- payment provider implementation
-- Billing Engine provider/payment logic
-- destructive operation
-- cross-agent conflict
-- major architecture decision
-- changing roadmap order
-- starting a blocked EPIC
-- crossing ownership boundaries
+- deploy de frontend;
+- deploy ou redeploy de Edge Function;
+- alteração de configuração remota que mude comportamento operacional.
 
-These gates are safety gates. They must not be removed for speed.
+## Gate 3 — Banco e Storage
 
-## Not a stopping condition
+- aplicar migration;
+- alterar RLS, grants, policies, funções SQL ou triggers remotamente;
+- criar, remover ou alterar bucket;
+- executar backfill, limpeza ou alteração de dados reais.
 
-Agents must **not** stop only because:
+## Gate 4 — Produção
 
-- a sprint finished
-- an EPIC loop finished
-- a report was created
-- a draft PR was opened
-- a draft PR was updated
-- a coherent batch was committed
-- the next roadmap EPIC is available
-- the next work is inside the same agent ownership boundary
-- the next work does not require merge, deploy, migration, production mutation, auth/RLS/billing boundary change, destructive operation or major architecture decision
+- qualquer escrita em produção;
+- testes destrutivos ou de carga contra produção;
+- mudança de domínio, DNS, OAuth, webhook ou callback de produção.
 
-In those cases, the agent must continue automatically.
+## Gate 5 — Segredos e contas externas
 
-## Autonomous checkpoint loop
+- criar, trocar, revogar ou expor segredo;
+- configurar credenciais Meta, Stripe, Supabase ou outro fornecedor;
+- submeter App Review, Business Verification ou ação externa irreversível.
 
-Agents must use this loop:
+## Gate 6 — Arquitetura e escopo
 
-```text
-select eligible work
-  ↓
-implement safe coherent batch
-  ↓
-commit small changes
-  ↓
-open/update draft PR
-  ↓
-write/update agent-room report
-  ↓
-check Hard Gates
-  ↓
-continue automatically if no Hard Gate exists
-```
+- nova arquitetura não decidida em ADR;
+- alteração de contrato multi-tenant;
+- alteração de modelo de autorização;
+- nova EPIC, fase ou feature não descrita em `CURRENT.md`.
 
-A draft PR is a checkpoint, not a stop.
+## Gate 7 — Segurança crítica
 
-A report is a checkpoint, not a stop.
+Ao encontrar risco Critical ou High comprovado, o agente:
 
-A completed sprint is a checkpoint, not a stop.
+1. não publica detalhes exploráveis em repositório público;
+2. registra evidência no repositório privado apropriado;
+3. interrompe somente a parte afetada;
+4. informa Victor com impacto e ação mínima necessária.
 
-## Checkpoint frequency
+## Regra de saída
 
-To avoid the confusion created by very large branches, agents must checkpoint early.
+Ao atingir um gate, o agente entrega:
 
-Recommended checkpoint triggers:
+- estado atual;
+- evidência;
+- ação bloqueada;
+- decisão exata necessária de Victor.
 
-- one coherent batch completed
-- more than 10 files changed
-- more than 5 commits accumulated
-- one module completed
-- before switching domain/module
-- before doing work that might become harder to review later
-
-Checkpointing does not require waiting for Victor/ChatGPT unless a Hard Gate is reached.
-
-## Continuous Work Limit
-
-To avoid unbounded autonomous drift, each agent may continue automatically until the first of these happens:
-
-- a Hard Gate is reached
-- 3 consecutive EPICs/major loops are completed without human review
-- 24 hours of continuous work has passed
-- the agent is uncertain whether the next step is safe
-- there is no remaining eligible work inside the agent ownership boundary
-
-After that, the agent must stop and report.
-
-## Permanent safety rules
-
-Agents must never:
-
-- work directly on `main`
-- push directly to `main`
-- merge their own PR
-- deploy production without approval
-- apply migrations without approval
-- mutate production data without approval
-- implement payment provider logic without approval
-- change auth, RLS, permissions or tenant isolation boundaries without approval
-- ignore a known blocker from another agent
-- continue when the next action would cross ownership boundaries
-
-## Required delivery shape
-
-All non-trivial work must be isolated as:
-
-```text
-new branch
-  ↓
-small commits
-  ↓
-draft PR checkpoint
-  ↓
-agent-room report checkpoint
-  ↓
-continue automatically when safe
-  ↓
-Hard Gate review only when required
-```
-
-If a branch becomes unsafe or wrong, close the PR and discard the branch. `main` must remain recoverable and clean.
-
-If in doubt, stop and report the blocker.
+Não inicia a etapa seguinte.
