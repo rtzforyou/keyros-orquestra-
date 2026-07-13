@@ -1,9 +1,13 @@
-# Keyros Orquestra
+# Keyros — Constituição
 
-Lightweight command repository for Keyros agent orchestration.
+Este repositório define COMO se opera. Não define o que fazer.
 
-This repo is the source of truth for START flow, current actions, agent roles, gates, and report format.
+- CONSTITUTION.md — como o agente trabalha
+- GATES.md — onde para
+- AMENDMENTS.md — toda alteração a estes dois ficheiros
 
-Product repo: `rtzforyou/easytattoo-crm`
+Nenhum agente escreve aqui. Só Victor.
 
-Technical engine repo: `rtzforyou/keyros-engine`
+Plano de ação: rtzforyou/keyros-engine/CURRENT.md
+
+Produto: rtzforyou/easytattoo-crm
