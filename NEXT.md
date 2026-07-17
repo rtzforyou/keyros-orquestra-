@@ -25,13 +25,22 @@ Estado verificado factualmente via Graph API + logs + DB (não via checklist do 
 - **App Secret + verify token no Vault ✅; campo `messages` subscrito ✅; WABA do número real
   subscrita à app ✅; callback URL correto e ativo ✅** (tudo confirmado via API).
 - Dossier App Review: páginas legais EN (Privacy/Data Deletion/ToS) publicadas + ícone 1024 ✅.
-- **BLOQUEIO ATIVO: a app Meta continua em Development mode (Unpublished)** → a Meta NÃO
-  entrega webhooks de números de produção (só do número de teste). Teste real de inbound
-  (2026-07-17) confirmou: mensagem enviada, zero entregas no webhook. **Ação de Victor:
-  passar a app para Live mode** (pré-requisitos legais já cumpridos) → retestar inbound.
-- Sequência após Live: CHECKPOINT enviar+receber real pelo CRM → Business Verification →
-  App Review (`whatsapp_business_messaging` + `whatsapp_business_management`) → merge PR #70
-  (limpeza Cloud-only) → Stripe (EPIC D, aguarda decisões).
+- **BLOQUEIO RESOLVIDO no próprio dia: app publicada (Published) por Victor** — a causa
+  dos webhooks não entregues era a app Unpublished. **Business verification: Verified ✅**
+  (Access verification/Tech Provider fica para a fase multi-tenant).
+- **✅ CHECKPOINT INBOUND DE PRODUÇÃO CUMPRIDO (2026-07-17 16:58 UTC):** mensagem real
+  recebida no número de produção e persistida ponta-a-ponta pelo caminho oficial:
+  Meta → whatsapp-cloud-webhook (assinatura X-Hub-Signature-256 OK) → contacto (dedup) →
+  wa_conversations → wa_messages (wamid real, delivered, janela 24h aberta) → automação
+  disparada. Sem criação de deal (regra respeitada). NOTA: o webhook v12 escreve no schema
+  Cloud-nativo `wa_conversations`/`wa_messages` (spec whatsapp-cloud-nativo F2), não nas
+  tabelas Evolution-shaped.
+- **DRIFT a fechar:** migração do schema Cloud-nativo existe em prod mas está untracked no
+  repo de produto (`20260726000000_wa_cloud_native_schema.sql`) — commitar + PR.
+- Sequência seguinte: CHECKPOINT outbound (responder pelo CRM dentro da janela 24h) →
+  UI de Mensagens sobre o schema nativo → App Review (`whatsapp_business_messaging` +
+  `whatsapp_business_management`) → merge PR #70 (limpeza Cloud-only, resolver ghost
+  `whatsapp-sync` antes de matar Evolution) → Stripe (EPIC D, aguarda decisões).
 
 ## Estado atual (factos)
 - EPIC C (WhatsApp Cloud) — **C1/C2/C3a DONE + DEPLOYED + VALIDADO** (branch `claude/whatsapp-cloud-api-c1`, PR #54):
