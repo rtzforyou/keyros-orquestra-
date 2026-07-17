@@ -37,9 +37,14 @@ Estado verificado factualmente via Graph API + logs + DB (não via checklist do 
   tabelas Evolution-shaped.
 - **DRIFT a fechar:** migração do schema Cloud-nativo existe em prod mas está untracked no
   repo de produto (`20260726000000_wa_cloud_native_schema.sql`) — commitar + PR.
-- Sequência seguinte: CHECKPOINT outbound (responder pelo CRM dentro da janela 24h) →
-  UI de Mensagens sobre o schema nativo → App Review (`whatsapp_business_messaging` +
-  `whatsapp_business_management`) → merge PR #70 (limpeza Cloud-only, resolver ghost
+- **✅ CHECKPOINT OUTBOUND TAMBÉM CUMPRIDO (2026-07-17 17:06 UTC):** resposta enviada da
+  aba Mensagens do CRM → whatsapp-send (schema nativo, janela 24h, token do Vault) →
+  Graph API (wamid real) → entregue no telemóvel → **recibo de entrega da Meta voltou pelo
+  webhook e atualizou o status sent→delivered**. Ciclo completo bidirecional PROVADO em
+  produção. A aba Mensagens (useRealMessages, realtime) já opera sobre o schema nativo.
+- **EPIC C core = FUNCIONAL EM PRODUÇÃO.** Sequência seguinte: commitar migração drift →
+  App Review (`whatsapp_business_messaging` + `whatsapp_business_management`, screencast do
+  fluxo real agora possível) → merge PR #70 (limpeza Cloud-only, resolver ghost
   `whatsapp-sync` antes de matar Evolution) → Stripe (EPIC D, aguarda decisões).
 
 ## Estado atual (factos)
