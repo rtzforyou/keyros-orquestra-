@@ -16,6 +16,23 @@ templates, UI de billing. Antenor liberto para outras frentes.
 Bloqueios de input de Victor: App Secret Meta (+subscrever `messages`); decisões+chaves Stripe.
 Bloqueio externo: token produção Meta (bug FB SMS).
 
+## UPDATE 2026-07-17 (Claude — cutover para número de produção)
+Estado verificado factualmente via Graph API + logs + DB (não via checklist do dashboard):
+- **Número de PRODUÇÃO ligado:** +41 78 261 98 19 "rtz tattoo studio" está VERIFIED e em
+  CLOUD_API; canal criado e ligado no CRM (whatsapp_channels, token no Vault) em 2026-07-17.
+  O bloqueio antigo do token/SMS foi ultrapassado. Checklist "Register number" do dashboard
+  Meta está por marcar mas é cosmético — a API confirma o registo.
+- **App Secret + verify token no Vault ✅; campo `messages` subscrito ✅; WABA do número real
+  subscrita à app ✅; callback URL correto e ativo ✅** (tudo confirmado via API).
+- Dossier App Review: páginas legais EN (Privacy/Data Deletion/ToS) publicadas + ícone 1024 ✅.
+- **BLOQUEIO ATIVO: a app Meta continua em Development mode (Unpublished)** → a Meta NÃO
+  entrega webhooks de números de produção (só do número de teste). Teste real de inbound
+  (2026-07-17) confirmou: mensagem enviada, zero entregas no webhook. **Ação de Victor:
+  passar a app para Live mode** (pré-requisitos legais já cumpridos) → retestar inbound.
+- Sequência após Live: CHECKPOINT enviar+receber real pelo CRM → Business Verification →
+  App Review (`whatsapp_business_messaging` + `whatsapp_business_management`) → merge PR #70
+  (limpeza Cloud-only) → Stripe (EPIC D, aguarda decisões).
+
 ## Estado atual (factos)
 - EPIC C (WhatsApp Cloud) — **C1/C2/C3a DONE + DEPLOYED + VALIDADO** (branch `claude/whatsapp-cloud-api-c1`, PR #54):
   - `whatsapp_channels` + `whatsapp_templates` (RLS por org), token no Vault.
